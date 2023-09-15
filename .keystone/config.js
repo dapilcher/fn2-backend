@@ -23,6 +23,7 @@ __export(keystone_exports, {
   default: () => keystone_default
 });
 module.exports = __toCommonJS(keystone_exports);
+var import_config = require("dotenv/config");
 var import_core2 = require("@keystone-6/core");
 
 // schema.ts
@@ -168,15 +169,27 @@ var session = (0, import_session.statelessSessions)({
   secret: sessionSecret
 });
 
+// utils/getEnvVar.ts
+function getEnvVar(v) {
+  const ret = process.env[v];
+  if (ret === void 0) {
+    throw new Error("process.env." + v + " is undefined!");
+  }
+  return ret;
+}
+
 // keystone.ts
 var keystone_default = withAuth(
   (0, import_core2.config)({
+    server: {
+      cors: {
+        origin: [getEnvVar("FRONTEND_URL")],
+        credentials: true
+      }
+    },
     db: {
-      // we're using sqlite for the fastest startup experience
-      //   for more information on what database might be appropriate for you
-      //   see https://keystonejs.com/docs/guides/choosing-a-database#title
-      provider: "sqlite",
-      url: "file:./keystone.db"
+      provider: "postgresql",
+      url: getEnvVar("POSTGRES_URL")
     },
     lists,
     session
