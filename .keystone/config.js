@@ -31,6 +31,47 @@ var import_core = require("@keystone-6/core");
 var import_access = require("@keystone-6/core/access");
 var import_fields = require("@keystone-6/core/fields");
 var import_fields_document = require("@keystone-6/fields-document");
+
+// componentBlocks.tsx
+var import_component_blocks = require("@keystone-6/fields-document/component-blocks");
+var import_jsx_runtime = require("react/jsx-runtime");
+var componentBlocks = {
+  quote: (0, import_component_blocks.component)({
+    preview: (props) => {
+      return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+        "div",
+        {
+          style: {
+            background: "#ecf0f4",
+            padding: 16,
+            borderRadius: 8,
+            margin: 0
+          },
+          children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontStyle: "italic", color: "#4A5568", margin: 0, padding: 0 }, children: props.fields.content.element }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontWeight: "bold", color: "#718096", margin: 0, padding: 0 }, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_component_blocks.NotEditable, { children: "\u2014 " }),
+              props.fields.attribution.element
+            ] })
+          ]
+        }
+      );
+    },
+    label: "Quote",
+    schema: {
+      content: import_component_blocks.fields.child({
+        kind: "block",
+        placeholder: "Quote...",
+        formatting: { inlineMarks: "inherit", softBreaks: "inherit" },
+        links: "inherit"
+      }),
+      attribution: import_component_blocks.fields.child({ kind: "inline", placeholder: "Attribution..." })
+    },
+    chromeless: true
+  })
+};
+
+// schema.ts
 var lists = {
   User: (0, import_core.list)({
     // WARNING
@@ -67,21 +108,6 @@ var lists = {
     access: import_access.allowAll,
     // this is the fields for our Post list
     fields: {
-      title: (0, import_fields.text)({ validation: { isRequired: true } }),
-      // the document field can be used for making rich editable content
-      //   you can find out more at https://keystonejs.com/docs/guides/document-fields
-      content: (0, import_fields_document.document)({
-        formatting: true,
-        layouts: [
-          [1, 1],
-          [1, 1, 1],
-          [2, 1],
-          [1, 2],
-          [1, 2, 1]
-        ],
-        links: true,
-        dividers: true
-      }),
       // with this field, you can set a User as the author for a Post
       author: (0, import_fields.relationship)({
         // we could have used 'User', but then the relationship would only be 1-way
@@ -89,8 +115,7 @@ var lists = {
         // this is some customisations for changing how this will look in the AdminUI
         ui: {
           displayMode: "cards",
-          cardFields: ["name", "email"],
-          inlineEdit: { fields: ["name", "email"] },
+          cardFields: ["name"],
           linkToItem: true,
           inlineConnect: true
         },
@@ -113,7 +138,76 @@ var lists = {
           inlineConnect: true,
           inlineCreate: { fields: ["name"] }
         }
+      }),
+      status: (0, import_fields.select)({
+        options: ["DRAFT", "PUBLISHED"],
+        defaultValue: "DRAFT"
+      }),
+      createdAt: (0, import_fields.timestamp)({
+        // this sets the timestamp to Date.now() when the user is first created
+        defaultValue: { kind: "now" },
+        ui: {
+          createView: {
+            fieldMode: "hidden"
+          },
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read"
+          }
+        }
+      }),
+      updatedAt: (0, import_fields.timestamp)({
+        ui: {
+          createView: {
+            fieldMode: "hidden"
+          },
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read"
+          }
+        }
+      }),
+      publishedAt: (0, import_fields.timestamp)({
+        ui: {
+          createView: {
+            fieldMode: "hidden"
+          },
+          // update to only display if not null
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read"
+          }
+        }
+      }),
+      title: (0, import_fields.text)({ validation: { isRequired: true } }),
+      // the document field can be used for making rich editable content
+      //   you can find out more at https://keystonejs.com/docs/guides/document-fields
+      content: (0, import_fields_document.document)({
+        formatting: true,
+        layouts: [
+          [1, 1],
+          [1, 1, 1],
+          [2, 1],
+          [1, 2],
+          [1, 2, 1]
+        ],
+        links: true,
+        dividers: true,
+        ui: {
+          views: "./componentBlocks"
+        },
+        componentBlocks
       })
+    },
+    hooks: {
+      resolveInput: ({ operation, inputData, resolvedData }) => {
+        let returnData = { ...resolvedData };
+        returnData.updatedAt = new Date(Date.now());
+        if (inputData.status === "PUBLISHED" && !inputData.publishedAt) {
+          returnData.publishedAt = new Date(Date.now());
+        }
+        return returnData;
+      }
     }
   }),
   // this last list is our Tag list, it only has a name field for now
