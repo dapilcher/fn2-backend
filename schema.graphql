@@ -55,7 +55,13 @@ input StringFilter {
   contains: String
   startsWith: String
   endsWith: String
+  mode: QueryMode
   not: NestedStringFilter
+}
+
+enum QueryMode {
+  default
+  insensitive
 }
 
 input NestedStringFilter {
@@ -136,11 +142,15 @@ input PostRelateToManyForCreateInput {
 
 type Post {
   id: ID!
-  title: String
-  content: Post_content_Document
   author: User
   tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
   tagsCount(where: TagWhereInput! = {}): Int
+  status: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  publishedAt: DateTime
+  title: String
+  content: Post_content_Document
 }
 
 type Post_content_Document {
@@ -156,9 +166,13 @@ input PostWhereInput {
   OR: [PostWhereInput!]
   NOT: [PostWhereInput!]
   id: IDFilter
-  title: StringFilter
   author: UserWhereInput
   tags: TagManyRelationFilter
+  status: StringNullableFilter
+  createdAt: DateTimeNullableFilter
+  updatedAt: DateTimeNullableFilter
+  publishedAt: DateTimeNullableFilter
+  title: StringFilter
 }
 
 input TagManyRelationFilter {
@@ -167,16 +181,39 @@ input TagManyRelationFilter {
   none: TagWhereInput
 }
 
+input StringNullableFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  mode: QueryMode
+  not: StringNullableFilter
+}
+
 input PostOrderByInput {
   id: OrderDirection
+  status: OrderDirection
+  createdAt: OrderDirection
+  updatedAt: OrderDirection
+  publishedAt: OrderDirection
   title: OrderDirection
 }
 
 input PostUpdateInput {
-  title: String
-  content: JSON
   author: UserRelateToOneForUpdateInput
   tags: TagRelateToManyForUpdateInput
+  status: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  publishedAt: DateTime
+  title: String
+  content: JSON
 }
 
 input UserRelateToOneForUpdateInput {
@@ -198,10 +235,14 @@ input PostUpdateArgs {
 }
 
 input PostCreateInput {
-  title: String
-  content: JSON
   author: UserRelateToOneForCreateInput
   tags: TagRelateToManyForCreateInput
+  status: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  publishedAt: DateTime
+  title: String
+  content: JSON
 }
 
 input UserRelateToOneForCreateInput {
@@ -400,11 +441,6 @@ enum KeystoneAdminUIFieldMetaItemViewFieldMode {
 enum KeystoneAdminUIFieldMetaItemViewFieldPosition {
   form
   sidebar
-}
-
-enum QueryMode {
-  default
-  insensitive
 }
 
 type KeystoneAdminUIFieldGroupMeta {
