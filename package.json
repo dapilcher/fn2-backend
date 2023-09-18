@@ -2,6 +2,7 @@
   "name": "keystone-app",
   "version": "1.0.2",
   "private": true,
+  "main": "keystone.ts",
   "scripts": {
     "dev": "keystone dev",
     "start": "keystone start",
