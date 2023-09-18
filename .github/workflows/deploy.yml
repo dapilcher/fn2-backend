@@ -17,5 +17,5 @@ jobs:
           script: |
             mkdir test
             cd test
-            git@github.com:dapilcher/advanced-react-backend.git
-            echo 'DigitalOcean d eployment successful'
+            git clone git@github.com:dapilcher/advanced-react-backend.git
+            echo 'DigitalOcean deployment successful'
