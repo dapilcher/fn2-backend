@@ -11,10 +11,10 @@ module.exports = shipit => {
       deployTo: process.env.SERVER_DEPLOY_PATH,
       repositoryUrl: process.env.GIT_REPO_URL,
       keepReleases: 5,
-      shared: {
-        overwrite: true,
-        dirs: [ 'node_modules' ]
-      }
+      // shared: {
+      //   overwrite: true,
+      //   dirs: [ 'node_modules' ]
+      // }
     },
     production: {
       servers: `${process.env.SSH_USER}@${process.env.SERVER_IP}`
