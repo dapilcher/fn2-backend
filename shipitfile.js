@@ -59,10 +59,10 @@ module.exports = {
       },
       env_production: {
         NODE_ENV: 'production',
-        POSTGRES_URL=${process.env.PRODUCTION_POSTGRES_URL}
-        DATABASE_URL=${process.env.PRODUCTION_DATABASE_URL}
-        SESSION_SECRET=${process.env.PRODUCTION_SESSION_SECRET}
-        FRONTEND_URL=${process.env.PRODUCTION_FRONTEND_URL}
+        POSTGRES_URL="${process.env.PRODUCTION_POSTGRES_URL}"
+        DATABASE_URL="${process.env.PRODUCTION_DATABASE_URL}"
+        SESSION_SECRET="${process.env.PRODUCTION_SESSION_SECRET}"
+        FRONTEND_URL="${process.env.PRODUCTION_FRONTEND_URL}"
       }
     }
   ]

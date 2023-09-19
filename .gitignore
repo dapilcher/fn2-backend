@@ -4,3 +4,4 @@ keystone.db
 *.log
 .vercel
 .env
+ecosystem.config.js
