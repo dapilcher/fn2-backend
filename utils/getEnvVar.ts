@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 export default function getEnvVar(v: string): string {
   const ret = process.env[v];
   if (ret === undefined) {
