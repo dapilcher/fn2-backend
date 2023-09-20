@@ -12,6 +12,37 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Create ecosystem.config.js
+        uses: "finnp/create-file-action@master"
+        env:
+          FILE_NAME: "./ecosystem.config.js"
+          FILE_DATA: |
+            module.exports = {
+              apps: [
+                {
+                  name: "${{ secrets.PM2_APPNAME }}",
+                  script: "npm",
+                  args: "start",
+                  watch: true,
+                  autorestart: true,
+                  restart_delay: 1000,
+                  env: {
+                    NODE_ENV: 'development'
+                  },
+                  env_production: {
+                    NODE_ENV: 'production',
+                  }
+                }
+              ]
+            };
+      - name: Create .env
+        uses: "finnp/create-file-action@master"
+        env:
+          FILE_NAME: "./.env"
+          FILE_DATA: |
+            DATABASE_URL: "${{ secrets.DATABASE_URL }}",
+            SESSION_SECRET: "${{ secrets.SESSION_SECRET }}",
+            FRONTEND_URL: "${{ secrets.FRONTEND_URL }}"
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@6.0.0
         with:
