@@ -1,7 +1,7 @@
 name: Build & Deploy
 on:
   workflow_run:
-    workflows: ["Stage deploy"]
+    workflows: ["Node.js CI"]
     types:
       - completed
 
