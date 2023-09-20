@@ -8,6 +8,7 @@
     "start": "keystone start",
     "build": "keystone build",
     "postinstall": "keystone build --no-ui --frozen",
+    "test": "echo 'No tests'",
     "ship": "npx shipit production deploy",
     "deploy:prod": "pm2 deploy ecosystem.config.js production"
   },
