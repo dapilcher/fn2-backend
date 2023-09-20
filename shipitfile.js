@@ -50,7 +50,8 @@ module.exports = {
   apps: [
     {
       name: "${appName}",
-      script: "${shipit.releasePath}/keystone.ts",
+      script: "npm",
+      args: "start",
       watch: true,
       autorestart: true,
       restart_delay: 1000,
