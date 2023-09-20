@@ -26,6 +26,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+        SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
