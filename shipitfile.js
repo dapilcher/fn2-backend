@@ -30,18 +30,18 @@ module.exports = shipit => {
 
   // Event Listeners
   shipit.on('updated', () => {
-    shipit.start('npm-install', 'copy-config');
+    shipit.start('copy-config');
   });
+
+  shipit.on('config-copied', () => {
+    shipit.start('npm-install');
+  })
 
   shipit.on('published', () => {
     shipit.start('pm2-server');
   });
 
   // Actions
-  shipit.blTask('npm-install', async () => {
-    shipit.remote(`cd ${shipit.releasePath} && npm install --production`)
-  });
-  
   shipit.blTask('copy-config', async () => {
     const fs = require('fs');
     
@@ -49,8 +49,8 @@ module.exports = shipit => {
 module.exports = {
   apps: [
     {
-      name: ${appName},
-      script: '${shipit.releasePath}/keystone.ts',
+      name: "${appName}",
+      script: "${shipit.releasePath}/keystone.ts",
       watch: true,
       autorestart: true,
       restart_delay: 1000,
@@ -59,10 +59,9 @@ module.exports = {
       },
       env_production: {
         NODE_ENV: 'production',
-        POSTGRES_URL="${process.env.PRODUCTION_POSTGRES_URL}"
-        DATABASE_URL="${process.env.PRODUCTION_DATABASE_URL}"
-        SESSION_SECRET="${process.env.PRODUCTION_SESSION_SECRET}"
-        FRONTEND_URL="${process.env.PRODUCTION_FRONTEND_URL}"
+        DATABASE_URL: "${process.env.PRODUCTION_DATABASE_URL}",
+        SESSION_SECRET: "${process.env.PRODUCTION_SESSION_SECRET}",
+        FRONTEND_URL: "${process.env.PRODUCTION_FRONTEND_URL}"
       }
     }
   ]
@@ -74,11 +73,18 @@ module.exports = {
     });
 
     await shipit.copyToRemote('ecosystem.config.js', ecosystemFilePath);
+    await shipit.copyToRemote('.env.production', `${shipit.releasePath}/.env`);
+
+    shipit.emit('config-copied');
   });
 
+  shipit.blTask('npm-install', async () => {
+    await shipit.remote(`cd ${shipit.releasePath} && npm install --omit=dev`)
+  });
+  
   shipit.blTask('pm2-server', async () => {
-    shipit.remote(`pm2 delete -s ${appName} || :`);
-    shipit.remote(`pm2 start ${ecosystemFilePath} --env production --watch true`);
+    await shipit.remote(`pm2 delete -s ${appName} || :`);
+    await shipit.remote(`pm2 start ${ecosystemFilePath} --env production --watch true`);
   });
 
 }

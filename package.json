@@ -8,7 +8,8 @@
     "start": "keystone start",
     "build": "keystone build",
     "postinstall": "keystone build --no-ui --frozen",
-    "ship": "npx shipit production deploy"
+    "ship": "npx shipit production deploy",
+    "deploy:prod": "pm2 deploy ecosystem.config.js production"
   },
   "dependencies": {
     "@keystone-6/auth": "^7.0.0",
