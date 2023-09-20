@@ -42,9 +42,9 @@ jobs:
           path: "./.env"
           write-mode: overwrite
           contents: |
-            DATABASE_URL="${{ secrets.DATABASE_URL }}";
-            SESSION_SECRET="${{ secrets.SESSION_SECRET }}";
-            FRONTEND_URL="${{ secrets.FRONTEND_URL }}";
+            DATABASE_URL="${{ secrets.DATABASE_URL }}"
+            SESSION_SECRET="${{ secrets.SESSION_SECRET }}"
+            FRONTEND_URL="${{ secrets.FRONTEND_URL }}"
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@6.0.0
         with:
@@ -62,4 +62,4 @@ jobs:
 
           script: |
             cd ${{ secrets.DEPLOY_PATH }}
-            npm install && npm run build && pm2 startOrReload --env production
+            npm install && npm run build && pm2 startOrReload ecosystem.config.js --env production
