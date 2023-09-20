@@ -40,9 +40,9 @@ jobs:
         env:
           FILE_NAME: "./.env"
           FILE_DATA: |
-            DATABASE_URL: "${{ secrets.DATABASE_URL }}"
-            SESSION_SECRET: "${{ secrets.SESSION_SECRET }}"
-            FRONTEND_URL: "${{ secrets.FRONTEND_URL }}"
+            DATABASE_URL="${{ secrets.DATABASE_URL }}"\n
+            SESSION_SECRET="${{ secrets.SESSION_SECRET }}"\n
+            FRONTEND_URL="${{ secrets.FRONTEND_URL }}"
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@6.0.0
         with:
