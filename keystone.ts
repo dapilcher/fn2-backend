@@ -28,7 +28,7 @@ export default withAuth(
     },
     db: {
       provider: "postgresql",
-      url: getEnvVar("POSTGRES_URL"),
+      url: getEnvVar("DATABASE_URL"),
     },
     lists,
     session,

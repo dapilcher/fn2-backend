@@ -7,7 +7,10 @@
     "dev": "keystone dev",
     "start": "keystone start",
     "build": "keystone build",
-    "postinstall": "keystone build --no-ui --frozen"
+    "postinstall": "keystone build --no-ui --frozen",
+    "test": "echo 'No tests'",
+    "ship": "npx shipit production deploy",
+    "deploy:prod": "pm2 deploy ecosystem.config.js production"
   },
   "dependencies": {
     "@keystone-6/auth": "^7.0.0",
@@ -18,5 +21,10 @@
   },
   "overrides": {
     "next": "13.4.12"
+  },
+  "devDependencies": {
+    "shipit-cli": "^5.3.0",
+    "shipit-deploy": "^5.3.0",
+    "shipit-shared": "^4.4.2"
   }
 }

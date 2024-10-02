@@ -1,0 +1,65 @@
+name: Deploy
+on:
+  workflow_run:
+    workflows: ["Node.js CI"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Create ecosystem.config.js
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: "./ecosystem.config.js"
+          write-mode: overwrite
+          contents: |
+            module.exports = {
+              apps: [
+                {
+                  name: "${{ secrets.PM2_APPNAME }}",
+                  script: "npm",
+                  args: "start",
+                  watch: true,
+                  autorestart: true,
+                  restart_delay: 1000,
+                  env: {
+                    NODE_ENV: 'development'
+                  },
+                  env_production: {
+                    NODE_ENV: 'production',
+                  }
+                }
+              ]
+            };
+      - name: Create .env
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: "./.env"
+          write-mode: overwrite
+          contents: |
+            DATABASE_URL="${{ secrets.DATABASE_URL }}"
+            SESSION_SECRET="${{ secrets.SESSION_SECRET }}"
+            FRONTEND_URL="${{ secrets.FRONTEND_URL }}"
+      - name: Deploy via rsync
+        uses: burnett01/rsync-deployments@6.0.0
+        with:
+          switches: -avzr --delete --rsh "ssh"
+          remote_path: ${{secrets.DEPLOY_PATH}}
+          remote_host: ${{secrets.SSH_HOST}}
+          remote_user: ${{secrets.SSH_USERNAME}}
+          remote_key: ${{ secrets.SSH_KEY }}
+      - name: Post-deploy scripts - Install, build, PM2 start
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{secrets.SSH_HOST}} # IP address of the server you wish to ssh into
+          key: ${{secrets.SSH_KEY}} # Private or public key of the server
+          username: ${{secrets.SSH_USERNAME}} # User of the server you want to ssh into
+
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            npm install && npx prisma migrate deploy && npm run build && NODE_ENV="production" pm2 startOrReload ecosystem.config.js --update-env
