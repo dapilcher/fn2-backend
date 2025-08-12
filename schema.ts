@@ -7,6 +7,7 @@
 
 import { list } from "@keystone-6/core";
 import { allowAll } from "@keystone-6/core/access";
+import slugify from "slugify";
 
 // see https://keystonejs.com/docs/fields/overview for the full list of fields
 //   this is a few common fields for an example
@@ -18,7 +19,6 @@ import {
   checkbox,
   select,
 } from "@keystone-6/core/fields";
-
 import { cloudinaryImage } from "@keystone-6/cloudinary";
 
 // the document field is a more complicated field, so it has it's own package
@@ -55,7 +55,10 @@ export const lists: Lists = {
         isIndexed: "unique",
       }),
 
-      password: password({ validation: { isRequired: true } }),
+      password: password({
+        validation: { isRequired: true },
+        // graphql: { omit: true },
+      }),
 
       // we can use this field to see what Posts this User has authored
       //   more on that in the Post list below
@@ -71,6 +74,12 @@ export const lists: Lists = {
           itemView: {
             fieldPosition: "sidebar",
             fieldMode: "read",
+          },
+        },
+        graphql: {
+          omit: {
+            create: true,
+            update: true,
           },
         },
       }),
@@ -138,6 +147,12 @@ export const lists: Lists = {
             fieldMode: "read",
           },
         },
+        graphql: {
+          omit: {
+            create: true,
+            update: true,
+          },
+        },
       }),
       updatedAt: timestamp({
         ui: {
@@ -164,6 +179,19 @@ export const lists: Lists = {
       }),
 
       title: text({ validation: { isRequired: true } }),
+      slug: text({
+        isIndexed: "unique",
+        isFilterable: true,
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read",
+          },
+        },
+      }),
 
       headerImage: cloudinaryImage({
         cloudinary: {
@@ -214,6 +242,12 @@ export const lists: Lists = {
         if (inputData.status === "PUBLISHED" && !inputData.publishedAt) {
           returnData.publishedAt = new Date(Date.now());
         }
+
+        // create a slug on initial creation
+        if (operation === "create") {
+          returnData.slug = slugify(inputData.title ?? "").toLowerCase();
+        }
+
         return returnData;
       },
     },
@@ -240,6 +274,12 @@ export const lists: Lists = {
             fieldMode: "read",
           },
         },
+        graphql: {
+          omit: {
+            create: true,
+            update: true,
+          },
+        },
       }),
       updatedAt: timestamp({
         ui: {
@@ -252,23 +292,19 @@ export const lists: Lists = {
           },
         },
       }),
-
-      title: text({
-        validation: { isRequired: true },
+      title: text({ validation: { isRequired: true } }),
+      slug: text({
         isIndexed: "unique",
-      }),
-
-      headerImage: cloudinaryImage({
-        cloudinary: {
-          cloudName: getEnvVar("CLOUDINARY_CLOUD_NAME"),
-          apiKey: getEnvVar("CLOUDINARY_API_KEY"),
-          apiSecret: getEnvVar("CLOUDINARY_API_SECRET"),
-          folder: "flightlessnerd-dev",
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read",
+          },
         },
       }),
-
-      headerImageAttribution: text(),
-      headerImageAttributionUrl: text(),
 
       // the document field can be used for making rich editable content
       //   you can find out more at https://keystonejs.com/docs/guides/document-fields
@@ -288,14 +324,34 @@ export const lists: Lists = {
         },
         componentBlocks,
       }),
+      headerImage: cloudinaryImage({
+        cloudinary: {
+          cloudName: process.env.CLOUDINARY_CLOUD_NAME || "dpilch",
+          apiKey: process.env.CLOUDINARY_API_KEY || "182646975456438",
+          apiSecret:
+            process.env.CLOUDINARY_API_SECRET || "7umM4KhC5ykM44nuAYLSozgtN2w",
+          folder: "flightlessnerd-dev",
+        },
+      }),
+      headerImageAttribution: text(),
+      headerImageAttributionUrl: text(),
     },
-
+    ui: {
+      listView: {
+        initialColumns: ["title", "slug", "updatedAt"],
+      },
+    },
     hooks: {
       resolveInput: ({ operation, inputData, resolvedData }) => {
         let returnData = { ...resolvedData };
 
-        // update updatedAt field for every update
-        returnData.updatedAt = new Date(Date.now());
+        // create a slug on initial creation
+        if (
+          operation === "create" ||
+          (operation === "update" && inputData.slug === null)
+        ) {
+          returnData.slug = slugify(inputData.title ?? "").toLowerCase();
+        }
 
         return returnData;
       },

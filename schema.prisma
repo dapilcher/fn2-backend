@@ -30,6 +30,7 @@ model Post {
   updatedAt                 DateTime?
   publishedAt               DateTime?
   title                     String    @default("")
+  slug                      String    @unique @default("")
   headerImage               Json?
   headerImageAttribution    String    @default("")
   headerImageAttributionUrl String    @default("")
@@ -43,11 +44,12 @@ model Page {
   id                        String    @id @default(cuid())
   createdAt                 DateTime? @default(now())
   updatedAt                 DateTime?
-  title                     String    @unique @default("")
+  title                     String    @default("")
+  slug                      String    @unique @default("")
+  content                   Json      @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
   headerImage               Json?
   headerImageAttribution    String    @default("")
   headerImageAttributionUrl String    @default("")
-  content                   Json      @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
 }
 
 model Tag {

@@ -112,7 +112,6 @@ input UserUpdateInput {
   email: String
   password: String
   posts: PostRelateToManyForUpdateInput
-  createdAt: DateTime
 }
 
 input PostRelateToManyForUpdateInput {
@@ -132,7 +131,6 @@ input UserCreateInput {
   email: String
   password: String
   posts: PostRelateToManyForCreateInput
-  createdAt: DateTime
 }
 
 input PostRelateToManyForCreateInput {
@@ -150,6 +148,7 @@ type Post {
   updatedAt: DateTime
   publishedAt: DateTime
   title: String
+  slug: String
   headerImage: CloudinaryImage_File
   headerImageAttribution: String
   headerImageAttributionUrl: String
@@ -211,6 +210,7 @@ type Post_content_Document {
 
 input PostWhereUniqueInput {
   id: ID
+  slug: String
 }
 
 input PostWhereInput {
@@ -225,6 +225,7 @@ input PostWhereInput {
   updatedAt: DateTimeNullableFilter
   publishedAt: DateTimeNullableFilter
   title: StringFilter
+  slug: StringFilter
   headerImageAttribution: StringFilter
   headerImageAttributionUrl: StringFilter
   blurb: StringFilter
@@ -258,6 +259,7 @@ input PostOrderByInput {
   updatedAt: OrderDirection
   publishedAt: OrderDirection
   title: OrderDirection
+  slug: OrderDirection
   headerImageAttribution: OrderDirection
   headerImageAttributionUrl: OrderDirection
   blurb: OrderDirection
@@ -267,10 +269,10 @@ input PostUpdateInput {
   author: UserRelateToOneForUpdateInput
   tags: TagRelateToManyForUpdateInput
   status: String
-  createdAt: DateTime
   updatedAt: DateTime
   publishedAt: DateTime
   title: String
+  slug: String
   headerImage: Upload
   headerImageAttribution: String
   headerImageAttributionUrl: String
@@ -303,10 +305,10 @@ input PostCreateInput {
   author: UserRelateToOneForCreateInput
   tags: TagRelateToManyForCreateInput
   status: String
-  createdAt: DateTime
   updatedAt: DateTime
   publishedAt: DateTime
   title: String
+  slug: String
   headerImage: Upload
   headerImageAttribution: String
   headerImageAttributionUrl: String
@@ -329,10 +331,11 @@ type Page {
   createdAt: DateTime
   updatedAt: DateTime
   title: String
+  slug: String
+  content: Page_content_Document
   headerImage: CloudinaryImage_File
   headerImageAttribution: String
   headerImageAttributionUrl: String
-  content: Page_content_Document
 }
 
 type Page_content_Document {
@@ -341,7 +344,7 @@ type Page_content_Document {
 
 input PageWhereUniqueInput {
   id: ID
-  title: String
+  slug: String
 }
 
 input PageWhereInput {
@@ -352,6 +355,7 @@ input PageWhereInput {
   createdAt: DateTimeNullableFilter
   updatedAt: DateTimeNullableFilter
   title: StringFilter
+  slug: StringFilter
   headerImageAttribution: StringFilter
   headerImageAttributionUrl: StringFilter
 }
@@ -361,18 +365,19 @@ input PageOrderByInput {
   createdAt: OrderDirection
   updatedAt: OrderDirection
   title: OrderDirection
+  slug: OrderDirection
   headerImageAttribution: OrderDirection
   headerImageAttributionUrl: OrderDirection
 }
 
 input PageUpdateInput {
-  createdAt: DateTime
   updatedAt: DateTime
   title: String
+  slug: String
+  content: JSON
   headerImage: Upload
   headerImageAttribution: String
   headerImageAttributionUrl: String
-  content: JSON
 }
 
 input PageUpdateArgs {
@@ -381,13 +386,13 @@ input PageUpdateArgs {
 }
 
 input PageCreateInput {
-  createdAt: DateTime
   updatedAt: DateTime
   title: String
+  slug: String
+  content: JSON
   headerImage: Upload
   headerImageAttribution: String
   headerImageAttributionUrl: String
-  content: JSON
 }
 
 type Tag {
@@ -483,17 +488,17 @@ input CreateInitialUserInput {
 }
 
 type Query {
-  users(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
   user(where: UserWhereUniqueInput!): User
+  users(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
   usersCount(where: UserWhereInput! = {}): Int
-  posts(where: PostWhereInput! = {}, orderBy: [PostOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PostWhereUniqueInput): [Post!]
   post(where: PostWhereUniqueInput!): Post
+  posts(where: PostWhereInput! = {}, orderBy: [PostOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PostWhereUniqueInput): [Post!]
   postsCount(where: PostWhereInput! = {}): Int
-  pages(where: PageWhereInput! = {}, orderBy: [PageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PageWhereUniqueInput): [Page!]
   page(where: PageWhereUniqueInput!): Page
+  pages(where: PageWhereInput! = {}, orderBy: [PageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PageWhereUniqueInput): [Page!]
   pagesCount(where: PageWhereInput! = {}): Int
-  tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
   tag(where: TagWhereUniqueInput!): Tag
+  tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
   tagsCount(where: TagWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
@@ -526,6 +531,7 @@ type KeystoneAdminUIListMeta {
   labelField: String!
   fields: [KeystoneAdminUIFieldMeta!]!
   groups: [KeystoneAdminUIFieldGroupMeta!]!
+  graphql: KeystoneAdminUIGraphQL!
   initialSort: KeystoneAdminUISort
   isHidden: Boolean!
   isSingleton: Boolean!
@@ -591,6 +597,33 @@ type KeystoneAdminUIFieldGroupMeta {
   label: String!
   description: String
   fields: [KeystoneAdminUIFieldMeta!]!
+}
+
+type KeystoneAdminUIGraphQL {
+  names: KeystoneAdminUIGraphQLNames!
+}
+
+type KeystoneAdminUIGraphQLNames {
+  outputTypeName: String!
+  whereInputName: String!
+  whereUniqueInputName: String!
+  createInputName: String!
+  createMutationName: String!
+  createManyMutationName: String!
+  relateToOneForCreateInputName: String!
+  relateToManyForCreateInputName: String!
+  itemQueryName: String!
+  listOrderName: String!
+  listQueryCountName: String!
+  listQueryName: String!
+  updateInputName: String!
+  updateMutationName: String!
+  updateManyInputName: String!
+  updateManyMutationName: String!
+  relateToOneForUpdateInputName: String!
+  relateToManyForUpdateInputName: String!
+  deleteMutationName: String!
+  deleteManyMutationName: String!
 }
 
 type KeystoneAdminUISort {

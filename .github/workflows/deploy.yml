@@ -1,13 +1,15 @@
 name: Deploy
 on:
-  workflow_run:
-    workflows: ["Node.js CI"]
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ["Node.js CI"]
+  #   types:
+  #     - completed
+  push:
+    branches: ["master"]
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -43,8 +45,13 @@ jobs:
           write-mode: overwrite
           contents: |
             DATABASE_URL="${{ secrets.DATABASE_URL }}"
+            POSTGRES_URL="${{ secrets.POSTGRES_URL }}"
             SESSION_SECRET="${{ secrets.SESSION_SECRET }}"
             FRONTEND_URL="${{ secrets.FRONTEND_URL }}"
+            CLOUDINARY_CLOUD_NAME="${{ secrets.CLOUDINARY_CLOUD_NAME }}"
+            CLOUDINARY_API_KEY="${{ secrets.CLOUDINARY_API_KEY }}"
+            CLOUDINARY_API_SECRET="${{ secrets.CLOUDINARY_API_SECRET }}"
+            CLOUDINARY_FOLDER="${{ secrets.CLOUDINARY_FOLDER }}"
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@6.0.0
         with:
