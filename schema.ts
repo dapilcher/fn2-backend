@@ -21,8 +21,6 @@ import {
 } from "@keystone-6/core/fields";
 import { cloudinaryImage } from "@keystone-6/cloudinary";
 
-import { cloudinaryImage } from "@keystone-6/cloudinary";
-
 // the document field is a more complicated field, so it has it's own package
 import { document } from "@keystone-6/fields-document";
 // if you want to make your own fields, see https://keystonejs.com/docs/guides/custom-fields
@@ -232,17 +230,6 @@ export const lists: Lists = {
         },
         componentBlocks,
       }),
-      blurb: text(),
-      headerImage: cloudinaryImage({
-        cloudinary: {
-          cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
-          apiKey: process.env.CLOUDINARY_API_KEY || "",
-          apiSecret: process.env.CLOUDINARY_API_SECRET || "",
-          folder: process.env.CLOUDINARY_FOLDER || "flightlessnerd-dev",
-        },
-      }),
-      headerImageAttribution: text(),
-      headerImageAttributionUrl: text(),
     },
 
     hooks: {
@@ -362,89 +349,6 @@ export const lists: Lists = {
         if (operation === "create") {
           returnData.slug = slugify(inputData.title ?? "").toLowerCase();
         }
-
-        return returnData;
-      },
-    },
-  }),
-
-  Page: list({
-    // WARNING
-    //   for this starter project, anyone can create, query, update and delete anything
-    //   if you want to prevent random people on the internet from accessing your data,
-    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-    access: allowAll,
-
-    // this is the fields for our Post list
-    fields: {
-      createdAt: timestamp({
-        // this sets the timestamp to Date.now() when the user is first created
-        defaultValue: { kind: "now" },
-        ui: {
-          createView: {
-            fieldMode: "hidden",
-          },
-          itemView: {
-            fieldPosition: "sidebar",
-            fieldMode: "read",
-          },
-        },
-      }),
-      updatedAt: timestamp({
-        ui: {
-          createView: {
-            fieldMode: "hidden",
-          },
-          itemView: {
-            fieldPosition: "sidebar",
-            fieldMode: "read",
-          },
-        },
-      }),
-
-      title: text({
-        validation: { isRequired: true },
-        isIndexed: "unique",
-      }),
-
-      headerImage: cloudinaryImage({
-        cloudinary: {
-          cloudName: getEnvVar("CLOUDINARY_CLOUD_NAME"),
-          apiKey: getEnvVar("CLOUDINARY_API_KEY"),
-          apiSecret: getEnvVar("CLOUDINARY_API_SECRET"),
-          folder: "flightlessnerd-dev",
-        },
-      }),
-
-      headerImageAttribution: text(),
-      headerImageAttributionUrl: text(),
-
-      // the document field can be used for making rich editable content
-      //   you can find out more at https://keystonejs.com/docs/guides/document-fields
-      content: document({
-        formatting: true,
-        layouts: [
-          [1, 1],
-          [1, 1, 1],
-          [2, 1],
-          [1, 2],
-          [1, 2, 1],
-        ],
-        links: true,
-        dividers: true,
-        ui: {
-          views: "./componentBlocks",
-        },
-        componentBlocks,
-      }),
-    },
-
-    hooks: {
-      resolveInput: ({ operation, inputData, resolvedData }) => {
-        let returnData = { ...resolvedData };
-
-        // update updatedAt field for every update
-        returnData.updatedAt = new Date(Date.now());
 
         return returnData;
       },
