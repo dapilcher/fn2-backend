@@ -346,7 +346,10 @@ export const lists: Lists = {
         let returnData = { ...resolvedData };
 
         // create a slug on initial creation
-        if (operation === "create") {
+        if (
+          operation === "create" ||
+          (operation === "update" && inputData.slug === null)
+        ) {
           returnData.slug = slugify(inputData.title ?? "").toLowerCase();
         }
 
