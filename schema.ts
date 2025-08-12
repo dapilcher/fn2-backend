@@ -21,6 +21,8 @@ import {
 } from "@keystone-6/core/fields";
 import { cloudinaryImage } from "@keystone-6/cloudinary";
 
+import { cloudinaryImage } from "@keystone-6/cloudinary";
+
 // the document field is a more complicated field, so it has it's own package
 import { document } from "@keystone-6/fields-document";
 // if you want to make your own fields, see https://keystonejs.com/docs/guides/custom-fields
@@ -31,6 +33,8 @@ import type { Lists } from ".keystone/types";
 
 import { componentBlocks } from "./componentBlocks";
 import { DateTime } from "@keystone-6/core/dist/declarations/src/types/schema/graphql-ts-schema";
+
+import getEnvVar from "./utils/getEnvVar";
 
 export const lists: Lists = {
   User: list({
@@ -175,6 +179,7 @@ export const lists: Lists = {
           },
         },
       }),
+
       title: text({ validation: { isRequired: true } }),
       slug: text({
         isIndexed: "unique",
@@ -187,6 +192,25 @@ export const lists: Lists = {
             fieldPosition: "sidebar",
             fieldMode: "read",
           },
+        },
+      }),
+
+      headerImage: cloudinaryImage({
+        cloudinary: {
+          cloudName: getEnvVar("CLOUDINARY_CLOUD_NAME"),
+          apiKey: getEnvVar("CLOUDINARY_API_KEY"),
+          apiSecret: getEnvVar("CLOUDINARY_API_SECRET"),
+          folder: "flightlessnerd-dev",
+        },
+      }),
+
+      headerImageAttribution: text(),
+      headerImageAttributionUrl: text(),
+
+      blurb: text({
+        validation: { length: { max: 200 } },
+        ui: {
+          displayMode: "textarea",
         },
       }),
 
@@ -220,6 +244,7 @@ export const lists: Lists = {
       headerImageAttribution: text(),
       headerImageAttributionUrl: text(),
     },
+
     hooks: {
       resolveInput: ({ operation, inputData, resolvedData }) => {
         let returnData = { ...resolvedData };
@@ -337,6 +362,89 @@ export const lists: Lists = {
         if (operation === "create") {
           returnData.slug = slugify(inputData.title ?? "").toLowerCase();
         }
+
+        return returnData;
+      },
+    },
+  }),
+
+  Page: list({
+    // WARNING
+    //   for this starter project, anyone can create, query, update and delete anything
+    //   if you want to prevent random people on the internet from accessing your data,
+    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
+    access: allowAll,
+
+    // this is the fields for our Post list
+    fields: {
+      createdAt: timestamp({
+        // this sets the timestamp to Date.now() when the user is first created
+        defaultValue: { kind: "now" },
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read",
+          },
+        },
+      }),
+      updatedAt: timestamp({
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read",
+          },
+        },
+      }),
+
+      title: text({
+        validation: { isRequired: true },
+        isIndexed: "unique",
+      }),
+
+      headerImage: cloudinaryImage({
+        cloudinary: {
+          cloudName: getEnvVar("CLOUDINARY_CLOUD_NAME"),
+          apiKey: getEnvVar("CLOUDINARY_API_KEY"),
+          apiSecret: getEnvVar("CLOUDINARY_API_SECRET"),
+          folder: "flightlessnerd-dev",
+        },
+      }),
+
+      headerImageAttribution: text(),
+      headerImageAttributionUrl: text(),
+
+      // the document field can be used for making rich editable content
+      //   you can find out more at https://keystonejs.com/docs/guides/document-fields
+      content: document({
+        formatting: true,
+        layouts: [
+          [1, 1],
+          [1, 1, 1],
+          [2, 1],
+          [1, 2],
+          [1, 2, 1],
+        ],
+        links: true,
+        dividers: true,
+        ui: {
+          views: "./componentBlocks",
+        },
+        componentBlocks,
+      }),
+    },
+
+    hooks: {
+      resolveInput: ({ operation, inputData, resolvedData }) => {
+        let returnData = { ...resolvedData };
+
+        // update updatedAt field for every update
+        returnData.updatedAt = new Date(Date.now());
 
         return returnData;
       },

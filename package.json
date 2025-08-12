@@ -10,7 +10,8 @@
     "postinstall": "keystone build --no-ui --frozen",
     "test": "echo 'No tests'",
     "ship": "npx shipit production deploy",
-    "deploy:prod": "pm2 deploy ecosystem.config.js production"
+    "deploy:prod": "pm2 deploy ecosystem.config.js production",
+    "predeploy": "npx prisma migrate dev"
   },
   "dependencies": {
     "@keystone-6/auth": "^8.0.0",

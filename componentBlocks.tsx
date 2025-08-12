@@ -35,4 +35,26 @@ export const componentBlocks = {
     },
     chromeless: true,
   }),
+  dropCap: component({
+    preview: (props) => {
+      return (
+        <span style={{
+          float: "left",
+          fontSize: "75px",
+          lineHeight: "60px",
+          paddingTop: "4px",
+          paddingRight: "8px",
+          paddingLeft: "3px",
+        }}>{props.fields.letter.element}</span>
+      )
+    },
+    label: 'Drop Cap',
+    schema: {
+      letter: fields.child({
+        kind: 'inline',
+        placeholder: 'A',
+      })
+    },
+    chromeless: true
+  })
 };
