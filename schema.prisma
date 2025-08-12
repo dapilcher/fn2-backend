@@ -31,11 +31,11 @@ model Post {
   publishedAt               DateTime?
   title                     String    @default("")
   slug                      String    @unique @default("")
-  content                   Json      @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
-  blurb                     String    @default("")
   headerImage               Json?
   headerImageAttribution    String    @default("")
   headerImageAttributionUrl String    @default("")
+  blurb                     String    @default("")
+  content                   Json      @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
 
   @@index([authorId])
 }
