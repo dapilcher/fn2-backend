@@ -214,7 +214,7 @@ export const lists: Lists = {
           cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
           apiKey: process.env.CLOUDINARY_API_KEY || "",
           apiSecret: process.env.CLOUDINARY_API_SECRET || "",
-          folder: "flightlessnerd-dev",
+          folder: process.env.CLOUDINARY_FOLDER || "flightlessnerd-dev",
         },
       }),
       headerImageAttribution: text(),
