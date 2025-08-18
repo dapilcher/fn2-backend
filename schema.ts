@@ -134,6 +134,9 @@ export const lists: Lists = {
       status: select({
         options: ["DRAFT", "PUBLISHED"],
         defaultValue: "DRAFT",
+        ui: {
+          displayMode: "segmented-control",
+        },
       }),
       createdAt: timestamp({
         // this sets the timestamp to Date.now() when the user is first created
