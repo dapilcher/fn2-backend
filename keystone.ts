@@ -8,6 +8,7 @@
 import "dotenv/config";
 
 import { config } from "@keystone-6/core";
+import express from "express";
 
 // to keep this file tidy, we define our schema in a different file
 import { lists } from "./schema";
@@ -24,6 +25,9 @@ export default withAuth(
       cors: {
         origin: [getEnvVar("FRONTEND_URL")],
         credentials: true,
+      },
+      extendExpressApp: (app) => {
+        app.use(express.static("public"));
       },
     },
     db: {

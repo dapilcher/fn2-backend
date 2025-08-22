@@ -228,6 +228,18 @@ export const lists: Lists = {
         ],
         links: true,
         dividers: true,
+        relationships: {
+          mention: {
+            listKey: "User",
+            selection: "id name",
+            label: "Mention",
+          },
+          postMention: {
+            listKey: "Post",
+            selection: "id title",
+            label: "Post Mention",
+          },
+        },
         ui: {
           views: "./componentBlocks",
         },
