@@ -260,7 +260,9 @@ export const lists: Lists = {
 
         // create a slug on initial creation
         if (operation === "create") {
-          returnData.slug = slugify(inputData.title ?? "").toLowerCase();
+          returnData.slug = slugify(inputData.title ?? "", {
+            remove: /[*+~.()'"!:@]/g,
+          }).toLowerCase();
         }
 
         return returnData;
@@ -365,7 +367,9 @@ export const lists: Lists = {
           operation === "create" ||
           (operation === "update" && inputData.slug === null)
         ) {
-          returnData.slug = slugify(inputData.title ?? "").toLowerCase();
+          returnData.slug = slugify(inputData.title ?? "", {
+            remove: /[*+~.()'"!:@]/g,
+          }).toLowerCase();
         }
 
         return returnData;
@@ -391,6 +395,39 @@ export const lists: Lists = {
       name: text(),
       // this can be helpful to find out all the Posts associated with a Tag
       posts: relationship({ ref: "Post.tags", many: true }),
+      slug: text({
+        isIndexed: "unique",
+        isFilterable: true,
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read",
+          },
+        },
+      }),
+    },
+    hooks: {
+      resolveInput: ({ operation, inputData, resolvedData }) => {
+        let returnData = { ...resolvedData };
+
+        // create a slug on initial creation
+        if (
+          operation === "create" ||
+          (operation === "update" &&
+            (inputData.slug === null ||
+              inputData.slug !==
+                slugify(inputData.name, { remove: /[*+~.()'"!:@]/g })))
+        ) {
+          returnData.slug = slugify(inputData.name ?? "", {
+            remove: /[*+~.()'"!:@]/g,
+          }).toLowerCase();
+        }
+
+        return returnData;
+      },
     },
   }),
 };

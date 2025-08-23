@@ -400,10 +400,12 @@ type Tag {
   name: String
   posts(where: PostWhereInput! = {}, orderBy: [PostOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PostWhereUniqueInput): [Post!]
   postsCount(where: PostWhereInput! = {}): Int
+  slug: String
 }
 
 input TagWhereUniqueInput {
   id: ID
+  slug: String
 }
 
 input TagWhereInput {
@@ -413,16 +415,19 @@ input TagWhereInput {
   id: IDFilter
   name: StringFilter
   posts: PostManyRelationFilter
+  slug: StringFilter
 }
 
 input TagOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  slug: OrderDirection
 }
 
 input TagUpdateInput {
   name: String
   posts: PostRelateToManyForUpdateInput
+  slug: String
 }
 
 input TagUpdateArgs {
@@ -433,6 +438,7 @@ input TagUpdateArgs {
 input TagCreateInput {
   name: String
   posts: PostRelateToManyForCreateInput
+  slug: String
 }
 
 """
