@@ -149,6 +149,7 @@ type Post {
   publishedAt: DateTime
   title: String
   slug: String
+  featured: Boolean
   headerImage: CloudinaryImage_File
   headerImageAttribution: String
   headerImageAttributionUrl: String
@@ -226,6 +227,7 @@ input PostWhereInput {
   publishedAt: DateTimeNullableFilter
   title: StringFilter
   slug: StringFilter
+  featured: BooleanFilter
   headerImageAttribution: StringFilter
   headerImageAttributionUrl: StringFilter
   blurb: StringFilter
@@ -252,6 +254,11 @@ input StringNullableFilter {
   not: StringNullableFilter
 }
 
+input BooleanFilter {
+  equals: Boolean
+  not: BooleanFilter
+}
+
 input PostOrderByInput {
   id: OrderDirection
   status: OrderDirection
@@ -260,6 +267,7 @@ input PostOrderByInput {
   publishedAt: OrderDirection
   title: OrderDirection
   slug: OrderDirection
+  featured: OrderDirection
   headerImageAttribution: OrderDirection
   headerImageAttributionUrl: OrderDirection
   blurb: OrderDirection
@@ -273,6 +281,7 @@ input PostUpdateInput {
   publishedAt: DateTime
   title: String
   slug: String
+  featured: Boolean
   headerImage: Upload
   headerImageAttribution: String
   headerImageAttributionUrl: String
@@ -309,6 +318,7 @@ input PostCreateInput {
   publishedAt: DateTime
   title: String
   slug: String
+  featured: Boolean
   headerImage: Upload
   headerImageAttribution: String
   headerImageAttributionUrl: String

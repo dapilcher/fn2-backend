@@ -196,6 +196,8 @@ export const lists: Lists = {
         },
       }),
 
+      featured: checkbox(),
+
       headerImage: cloudinaryImage({
         cloudinary: {
           cloudName: getEnvVar("CLOUDINARY_CLOUD_NAME"),

@@ -31,6 +31,7 @@ model Post {
   publishedAt               DateTime?
   title                     String    @default("")
   slug                      String    @unique @default("")
+  featured                  Boolean   @default(false)
   headerImage               Json?
   headerImageAttribution    String    @default("")
   headerImageAttributionUrl String    @default("")
