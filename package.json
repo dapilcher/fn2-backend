@@ -10,7 +10,8 @@
     "postinstall": "keystone build --no-ui --frozen",
     "test": "echo 'No tests'",
     "ship": "npx shipit production deploy",
-    "deploy:prod": "pm2 deploy ecosystem.config.js production",
+    "deploy:prod-old": "pm2 deploy ecosystem.config.js production",
+    "deploy:prod": "npm install && npx prisma migrate deploy && npm run build && NODE_ENV=\"production\" pm2 startOrReload ecosystem.config.js --update-env",
     "predeploy": "npx prisma migrate dev"
   },
   "dependencies": {
