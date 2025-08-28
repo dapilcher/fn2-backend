@@ -33,6 +33,7 @@ model Post {
   title                     String    @default("")
   slug                      String    @unique @default("")
   featured                  Boolean   @default(false)
+  weight                    Float     @default(1)
   headerImage               Json?
   headerImageAttribution    String    @default("")
   headerImageAttributionUrl String    @default("")

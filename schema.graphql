@@ -151,6 +151,7 @@ type Post {
   title: String
   slug: String
   featured: Boolean
+  weight: Float
   headerImage: CloudinaryImage_File
   headerImageAttribution: String
   headerImageAttributionUrl: String
@@ -230,6 +231,7 @@ input PostWhereInput {
   title: StringFilter
   slug: StringFilter
   featured: BooleanFilter
+  weight: FloatFilter
   headerImageAttribution: StringFilter
   headerImageAttributionUrl: StringFilter
   blurb: StringFilter
@@ -272,6 +274,17 @@ input BooleanFilter {
   not: BooleanFilter
 }
 
+input FloatFilter {
+  equals: Float
+  in: [Float!]
+  notIn: [Float!]
+  lt: Float
+  lte: Float
+  gt: Float
+  gte: Float
+  not: FloatFilter
+}
+
 input PostOrderByInput {
   id: OrderDirection
   status: OrderDirection
@@ -282,6 +295,7 @@ input PostOrderByInput {
   title: OrderDirection
   slug: OrderDirection
   featured: OrderDirection
+  weight: OrderDirection
   headerImageAttribution: OrderDirection
   headerImageAttributionUrl: OrderDirection
   blurb: OrderDirection
@@ -297,6 +311,7 @@ input PostUpdateInput {
   title: String
   slug: String
   featured: Boolean
+  weight: Float
   headerImage: Upload
   headerImageAttribution: String
   headerImageAttributionUrl: String
@@ -335,6 +350,7 @@ input PostCreateInput {
   title: String
   slug: String
   featured: Boolean
+  weight: Float
   headerImage: Upload
   headerImageAttribution: String
   headerImageAttributionUrl: String

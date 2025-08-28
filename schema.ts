@@ -19,6 +19,7 @@ import {
   checkbox,
   select,
   integer,
+  float,
 } from "@keystone-6/core/fields";
 import { cloudinaryImage } from "@keystone-6/cloudinary";
 
@@ -212,6 +213,10 @@ export const lists: Lists = {
       }),
 
       featured: checkbox(),
+      weight: float({
+        validation: { isRequired: true, min: 0, max: 2 },
+        defaultValue: 1,
+      }),
 
       headerImage: cloudinaryImage({
         cloudinary: {
