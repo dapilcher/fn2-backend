@@ -29,6 +29,7 @@ model Post {
   createdAt                 DateTime? @default(now())
   updatedAt                 DateTime?
   publishedAt               DateTime?
+  views                     Int       @default(0)
   title                     String    @default("")
   slug                      String    @unique @default("")
   featured                  Boolean   @default(false)

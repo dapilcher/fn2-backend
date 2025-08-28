@@ -147,6 +147,7 @@ type Post {
   createdAt: DateTime
   updatedAt: DateTime
   publishedAt: DateTime
+  views: Int
   title: String
   slug: String
   featured: Boolean
@@ -225,6 +226,7 @@ input PostWhereInput {
   createdAt: DateTimeNullableFilter
   updatedAt: DateTimeNullableFilter
   publishedAt: DateTimeNullableFilter
+  views: IntFilter
   title: StringFilter
   slug: StringFilter
   featured: BooleanFilter
@@ -254,6 +256,17 @@ input StringNullableFilter {
   not: StringNullableFilter
 }
 
+input IntFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: IntFilter
+}
+
 input BooleanFilter {
   equals: Boolean
   not: BooleanFilter
@@ -265,6 +278,7 @@ input PostOrderByInput {
   createdAt: OrderDirection
   updatedAt: OrderDirection
   publishedAt: OrderDirection
+  views: OrderDirection
   title: OrderDirection
   slug: OrderDirection
   featured: OrderDirection
@@ -279,6 +293,7 @@ input PostUpdateInput {
   status: String
   updatedAt: DateTime
   publishedAt: DateTime
+  views: Int
   title: String
   slug: String
   featured: Boolean
@@ -316,6 +331,7 @@ input PostCreateInput {
   status: String
   updatedAt: DateTime
   publishedAt: DateTime
+  views: Int
   title: String
   slug: String
   featured: Boolean

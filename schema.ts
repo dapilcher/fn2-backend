@@ -18,6 +18,7 @@ import {
   timestamp,
   checkbox,
   select,
+  integer,
 } from "@keystone-6/core/fields";
 import { cloudinaryImage } from "@keystone-6/cloudinary";
 
@@ -169,6 +170,20 @@ export const lists: Lists = {
         },
       }),
       publishedAt: timestamp({
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          // update to only display if not null
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read",
+          },
+        },
+      }),
+      views: integer({
+        validation: { isRequired: true, min: 0 },
+        defaultValue: 0,
         ui: {
           createView: {
             fieldMode: "hidden",
