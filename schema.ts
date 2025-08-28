@@ -248,6 +248,18 @@ export const lists: Lists = {
         componentBlocks,
       }),
     },
+    ui: {
+      listView: {
+        initialColumns: [
+          "title",
+          "createdAt",
+          "tags",
+          "author",
+          "status",
+          "publishedAt",
+        ],
+      },
+    },
 
     hooks: {
       resolveInput: ({ operation, inputData, resolvedData }) => {
@@ -394,7 +406,7 @@ export const lists: Lists = {
 
     // this is the fields for our Tag list
     fields: {
-      name: text(),
+      name: text({ validation: { isRequired: true }, defaultValue: "" }),
       // this can be helpful to find out all the Posts associated with a Tag
       posts: relationship({ ref: "Post.tags", many: true }),
       slug: text({
