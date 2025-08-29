@@ -18,6 +18,8 @@ import {
   timestamp,
   checkbox,
   select,
+  integer,
+  float,
 } from "@keystone-6/core/fields";
 import { cloudinaryImage } from "@keystone-6/cloudinary";
 
@@ -157,6 +159,18 @@ export const lists: Lists = {
           },
         },
       }),
+      publishedAt: timestamp({
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          // update to only display if not null
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read",
+          },
+        },
+      }),
       updatedAt: timestamp({
         ui: {
           createView: {
@@ -168,7 +182,23 @@ export const lists: Lists = {
           },
         },
       }),
-      publishedAt: timestamp({
+      views: integer({
+        validation: { isRequired: true, min: 0 },
+        defaultValue: 0,
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          // update to only display if not null
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read",
+          },
+        },
+      }),
+      avgTimeOnPage: integer({
+        validation: { isRequired: true, min: 0 },
+        defaultValue: 0,
         ui: {
           createView: {
             fieldMode: "hidden",
@@ -197,6 +227,10 @@ export const lists: Lists = {
       }),
 
       featured: checkbox(),
+      weight: float({
+        validation: { isRequired: true, min: 0, max: 2 },
+        defaultValue: 1,
+      }),
 
       headerImage: cloudinaryImage({
         cloudinary: {
@@ -209,6 +243,10 @@ export const lists: Lists = {
 
       headerImageAttribution: text(),
       headerImageAttributionUrl: text(),
+      headerAltText: text({
+        validation: { isRequired: true },
+        defaultValue: "Header image",
+      }),
 
       blurb: text({
         validation: { length: { max: 200 } },
@@ -247,6 +285,18 @@ export const lists: Lists = {
         },
         componentBlocks,
       }),
+    },
+    ui: {
+      listView: {
+        initialColumns: [
+          "title",
+          "createdAt",
+          "tags",
+          "author",
+          "status",
+          "publishedAt",
+        ],
+      },
     },
 
     hooks: {
@@ -394,7 +444,7 @@ export const lists: Lists = {
 
     // this is the fields for our Tag list
     fields: {
-      name: text(),
+      name: text({ validation: { isRequired: true }, defaultValue: "" }),
       // this can be helpful to find out all the Posts associated with a Tag
       posts: relationship({ ref: "Post.tags", many: true }),
       slug: text({

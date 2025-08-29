@@ -145,14 +145,18 @@ type Post {
   tagsCount(where: TagWhereInput! = {}): Int
   status: String
   createdAt: DateTime
-  updatedAt: DateTime
   publishedAt: DateTime
+  updatedAt: DateTime
+  views: Int
+  avgTimeOnPage: Int
   title: String
   slug: String
   featured: Boolean
+  weight: Float
   headerImage: CloudinaryImage_File
   headerImageAttribution: String
   headerImageAttributionUrl: String
+  headerAltText: String
   blurb: String
   content: Post_content_Document
 }
@@ -223,13 +227,17 @@ input PostWhereInput {
   tags: TagManyRelationFilter
   status: StringNullableFilter
   createdAt: DateTimeNullableFilter
-  updatedAt: DateTimeNullableFilter
   publishedAt: DateTimeNullableFilter
+  updatedAt: DateTimeNullableFilter
+  views: IntFilter
+  avgTimeOnPage: IntFilter
   title: StringFilter
   slug: StringFilter
   featured: BooleanFilter
+  weight: FloatFilter
   headerImageAttribution: StringFilter
   headerImageAttributionUrl: StringFilter
+  headerAltText: StringFilter
   blurb: StringFilter
 }
 
@@ -254,22 +262,48 @@ input StringNullableFilter {
   not: StringNullableFilter
 }
 
+input IntFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: IntFilter
+}
+
 input BooleanFilter {
   equals: Boolean
   not: BooleanFilter
+}
+
+input FloatFilter {
+  equals: Float
+  in: [Float!]
+  notIn: [Float!]
+  lt: Float
+  lte: Float
+  gt: Float
+  gte: Float
+  not: FloatFilter
 }
 
 input PostOrderByInput {
   id: OrderDirection
   status: OrderDirection
   createdAt: OrderDirection
-  updatedAt: OrderDirection
   publishedAt: OrderDirection
+  updatedAt: OrderDirection
+  views: OrderDirection
+  avgTimeOnPage: OrderDirection
   title: OrderDirection
   slug: OrderDirection
   featured: OrderDirection
+  weight: OrderDirection
   headerImageAttribution: OrderDirection
   headerImageAttributionUrl: OrderDirection
+  headerAltText: OrderDirection
   blurb: OrderDirection
 }
 
@@ -277,14 +311,18 @@ input PostUpdateInput {
   author: UserRelateToOneForUpdateInput
   tags: TagRelateToManyForUpdateInput
   status: String
-  updatedAt: DateTime
   publishedAt: DateTime
+  updatedAt: DateTime
+  views: Int
+  avgTimeOnPage: Int
   title: String
   slug: String
   featured: Boolean
+  weight: Float
   headerImage: Upload
   headerImageAttribution: String
   headerImageAttributionUrl: String
+  headerAltText: String
   blurb: String
   content: JSON
 }
@@ -314,14 +352,18 @@ input PostCreateInput {
   author: UserRelateToOneForCreateInput
   tags: TagRelateToManyForCreateInput
   status: String
-  updatedAt: DateTime
   publishedAt: DateTime
+  updatedAt: DateTime
+  views: Int
+  avgTimeOnPage: Int
   title: String
   slug: String
   featured: Boolean
+  weight: Float
   headerImage: Upload
   headerImageAttribution: String
   headerImageAttributionUrl: String
+  headerAltText: String
   blurb: String
   content: JSON
 }
