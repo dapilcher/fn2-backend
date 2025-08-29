@@ -4,15 +4,16 @@
   "private": true,
   "main": "keystone.ts",
   "scripts": {
-    "dev": "keystone dev",
+    "dev": "keystone dev --no-db-push",
     "start": "keystone start",
     "build": "keystone build",
     "postinstall": "keystone build --no-ui --frozen",
     "test": "echo 'No tests'",
     "ship": "npx shipit production deploy",
     "deploy:prod-old": "pm2 deploy ecosystem.config.js production",
-    "deploy:prod": "npm install && npx prisma migrate deploy && npm run build && NODE_ENV=\"production\" pm2 startOrReload ecosystem.config.js --update-env",
-    "predeploy": "npx prisma migrate dev"
+    "deploy:prod": "npm install && npm run build && npm run migrate:deploy && NODE_ENV=\"production\" pm2 startOrReload ecosystem.config.js --update-env",
+    "migrate:dev": "keystone prisma migrate dev",
+    "migrate:deploy": "keystone prisma migrate deploy"
   },
   "dependencies": {
     "@keystone-6/auth": "^8.0.0",
