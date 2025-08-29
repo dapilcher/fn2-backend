@@ -145,8 +145,8 @@ type Post {
   tagsCount(where: TagWhereInput! = {}): Int
   status: String
   createdAt: DateTime
-  updatedAt: DateTime
   publishedAt: DateTime
+  updatedAt: DateTime
   views: Int
   avgTimeOnPage: Int
   title: String
@@ -156,6 +156,7 @@ type Post {
   headerImage: CloudinaryImage_File
   headerImageAttribution: String
   headerImageAttributionUrl: String
+  headerAltText: String
   blurb: String
   content: Post_content_Document
 }
@@ -226,8 +227,8 @@ input PostWhereInput {
   tags: TagManyRelationFilter
   status: StringNullableFilter
   createdAt: DateTimeNullableFilter
-  updatedAt: DateTimeNullableFilter
   publishedAt: DateTimeNullableFilter
+  updatedAt: DateTimeNullableFilter
   views: IntFilter
   avgTimeOnPage: IntFilter
   title: StringFilter
@@ -236,6 +237,7 @@ input PostWhereInput {
   weight: FloatFilter
   headerImageAttribution: StringFilter
   headerImageAttributionUrl: StringFilter
+  headerAltText: StringFilter
   blurb: StringFilter
 }
 
@@ -291,8 +293,8 @@ input PostOrderByInput {
   id: OrderDirection
   status: OrderDirection
   createdAt: OrderDirection
-  updatedAt: OrderDirection
   publishedAt: OrderDirection
+  updatedAt: OrderDirection
   views: OrderDirection
   avgTimeOnPage: OrderDirection
   title: OrderDirection
@@ -301,6 +303,7 @@ input PostOrderByInput {
   weight: OrderDirection
   headerImageAttribution: OrderDirection
   headerImageAttributionUrl: OrderDirection
+  headerAltText: OrderDirection
   blurb: OrderDirection
 }
 
@@ -308,8 +311,8 @@ input PostUpdateInput {
   author: UserRelateToOneForUpdateInput
   tags: TagRelateToManyForUpdateInput
   status: String
-  updatedAt: DateTime
   publishedAt: DateTime
+  updatedAt: DateTime
   views: Int
   avgTimeOnPage: Int
   title: String
@@ -319,6 +322,7 @@ input PostUpdateInput {
   headerImage: Upload
   headerImageAttribution: String
   headerImageAttributionUrl: String
+  headerAltText: String
   blurb: String
   content: JSON
 }
@@ -348,8 +352,8 @@ input PostCreateInput {
   author: UserRelateToOneForCreateInput
   tags: TagRelateToManyForCreateInput
   status: String
-  updatedAt: DateTime
   publishedAt: DateTime
+  updatedAt: DateTime
   views: Int
   avgTimeOnPage: Int
   title: String
@@ -359,6 +363,7 @@ input PostCreateInput {
   headerImage: Upload
   headerImageAttribution: String
   headerImageAttributionUrl: String
+  headerAltText: String
   blurb: String
   content: JSON
 }

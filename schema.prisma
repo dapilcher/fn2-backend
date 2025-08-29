@@ -27,8 +27,8 @@ model Post {
   tags                      Tag[]     @relation("Post_tags")
   status                    String?   @default("DRAFT")
   createdAt                 DateTime? @default(now())
-  updatedAt                 DateTime?
   publishedAt               DateTime?
+  updatedAt                 DateTime?
   views                     Int       @default(0)
   avgTimeOnPage             Int       @default(0)
   title                     String    @default("")
@@ -38,6 +38,7 @@ model Post {
   headerImage               Json?
   headerImageAttribution    String    @default("")
   headerImageAttributionUrl String    @default("")
+  headerAltText             String    @default("Header image")
   blurb                     String    @default("")
   content                   Json      @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
 

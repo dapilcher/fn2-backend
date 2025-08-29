@@ -159,23 +159,23 @@ export const lists: Lists = {
           },
         },
       }),
-      updatedAt: timestamp({
-        ui: {
-          createView: {
-            fieldMode: "hidden",
-          },
-          itemView: {
-            fieldPosition: "sidebar",
-            fieldMode: "read",
-          },
-        },
-      }),
       publishedAt: timestamp({
         ui: {
           createView: {
             fieldMode: "hidden",
           },
           // update to only display if not null
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read",
+          },
+        },
+      }),
+      updatedAt: timestamp({
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
           itemView: {
             fieldPosition: "sidebar",
             fieldMode: "read",
@@ -243,6 +243,10 @@ export const lists: Lists = {
 
       headerImageAttribution: text(),
       headerImageAttributionUrl: text(),
+      headerAltText: text({
+        validation: { isRequired: true },
+        defaultValue: "Header image",
+      }),
 
       blurb: text({
         validation: { length: { max: 200 } },

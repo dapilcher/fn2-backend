@@ -135,6 +135,7 @@ export const componentBlocks = {
         defaultValue:
           "https://images.unsplash.com/photo-1579546929518-9e396f3cc809",
       }),
+      altText: fields.text({ label: "Alt text", defaultValue: "" }),
     },
   }),
 };
