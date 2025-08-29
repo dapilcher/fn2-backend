@@ -196,6 +196,20 @@ export const lists: Lists = {
           },
         },
       }),
+      avgTimeOnPage: integer({
+        validation: { isRequired: true, min: 0 },
+        defaultValue: 0,
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          // update to only display if not null
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read",
+          },
+        },
+      }),
 
       title: text({ validation: { isRequired: true } }),
       slug: text({

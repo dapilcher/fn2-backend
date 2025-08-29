@@ -30,6 +30,7 @@ model Post {
   updatedAt                 DateTime?
   publishedAt               DateTime?
   views                     Int       @default(0)
+  avgTimeOnPage             Int       @default(0)
   title                     String    @default("")
   slug                      String    @unique @default("")
   featured                  Boolean   @default(false)

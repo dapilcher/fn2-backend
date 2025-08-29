@@ -148,6 +148,7 @@ type Post {
   updatedAt: DateTime
   publishedAt: DateTime
   views: Int
+  avgTimeOnPage: Int
   title: String
   slug: String
   featured: Boolean
@@ -228,6 +229,7 @@ input PostWhereInput {
   updatedAt: DateTimeNullableFilter
   publishedAt: DateTimeNullableFilter
   views: IntFilter
+  avgTimeOnPage: IntFilter
   title: StringFilter
   slug: StringFilter
   featured: BooleanFilter
@@ -292,6 +294,7 @@ input PostOrderByInput {
   updatedAt: OrderDirection
   publishedAt: OrderDirection
   views: OrderDirection
+  avgTimeOnPage: OrderDirection
   title: OrderDirection
   slug: OrderDirection
   featured: OrderDirection
@@ -308,6 +311,7 @@ input PostUpdateInput {
   updatedAt: DateTime
   publishedAt: DateTime
   views: Int
+  avgTimeOnPage: Int
   title: String
   slug: String
   featured: Boolean
@@ -347,6 +351,7 @@ input PostCreateInput {
   updatedAt: DateTime
   publishedAt: DateTime
   views: Int
+  avgTimeOnPage: Int
   title: String
   slug: String
   featured: Boolean
