@@ -7,7 +7,7 @@
 
 import "dotenv/config";
 
-import { config } from "@keystone-6/core";
+import { config, graphql } from "@keystone-6/core";
 import express from "express";
 
 // to keep this file tidy, we define our schema in a different file
@@ -36,5 +36,41 @@ export default withAuth(
     },
     lists,
     session,
+    graphql: {
+      extendGraphqlSchema: graphql.extend((base) => {
+        return {
+          query: {
+            getPopularPosts: graphql.field({
+              type: graphql.list(graphql.nonNull(base.object("Post"))),
+              args: {
+                take: graphql.arg({ type: graphql.Int, defaultValue: 8 }),
+              },
+              async resolve(source, { take }, context) {
+                const allPosts = await context.query.Post.findMany({
+                  where: { status: { equals: "PUBLISHED" } },
+                  query: "id popularScore",
+                });
+
+                const sortedPosts = allPosts
+                  .sort((a, b) => {
+                    return b.popularScore - a.popularScore;
+                  })
+                  .slice(0, take);
+
+                const final = await context.query.Post.findMany({
+                  where: {
+                    id: { in: sortedPosts.map((post) => post.id) || [] },
+                  },
+                  query:
+                    "title author { id name } slug id headerImage { id } headerAltText blurb tags { name slug id }",
+                });
+                console.log({ final });
+                return final;
+              },
+            }),
+          },
+        };
+      }),
+    },
   })
 );

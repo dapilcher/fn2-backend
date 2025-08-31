@@ -161,6 +161,7 @@ type Post {
   headerAltText: String
   blurb: String
   content: Post_content_Document
+  popularScore: Float
   relatedScore(keywords: String! = "Video Games"): Float
   relatedPosts: [Post]
 }
@@ -572,6 +573,7 @@ type Query {
   tagsCount(where: TagWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
+  getPopularPosts(take: Int = 8): [Post!]
 }
 
 union AuthenticatedItem = User

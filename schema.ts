@@ -300,6 +300,32 @@ export const lists: Lists = {
         },
         componentBlocks,
       }),
+      popularScore: virtual({
+        field: graphql.field({
+          type: graphql.Float,
+          resolve(item, args, context) {
+            const { views, uniqueVisitors, publishedAt } = item;
+            const janOneTwentyFive = 1735711200;
+            const publishSeconds = Math.floor(
+              new Date(publishedAt || Date.now()).getTime() / 1000
+            );
+            const freshness =
+              (publishSeconds - janOneTwentyFive) / (60 * 60 * 24 * 14); // seconds in 14 days
+
+            const score = Math.log10(views + uniqueVisitors) + freshness;
+
+            return score;
+          },
+        }),
+        // ui: {
+        //   createView: {
+        //     fieldMode: "hidden",
+        //   },
+        //   itemView: {
+        //     fieldMode: "hidden",
+        //   },
+        // },
+      }),
       relatedScore: virtual({
         field: graphql.field({
           type: graphql.Float,
@@ -309,7 +335,7 @@ export const lists: Lists = {
               defaultValue: "Video Games",
             }),
           },
-          async resolve(item, args, context) {
+          resolve(item, args, context) {
             const compKeywords = args.keywords
               .split(",")
               .map((kw) => kw.trim().toLowerCase());
