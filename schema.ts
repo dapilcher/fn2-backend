@@ -5,7 +5,7 @@
 // If you want to learn more about how lists are configured, please read
 // - https://keystonejs.com/docs/config/lists
 
-import { list } from "@keystone-6/core";
+import { list, graphql } from "@keystone-6/core";
 import { allowAll } from "@keystone-6/core/access";
 import slugify from "slugify";
 
@@ -20,6 +20,7 @@ import {
   select,
   integer,
   float,
+  virtual,
 } from "@keystone-6/core/fields";
 import { cloudinaryImage } from "@keystone-6/cloudinary";
 
@@ -115,24 +116,6 @@ export const lists: Lists = {
         many: false,
       }),
 
-      // with this field, you can add some Tags to Posts
-      tags: relationship({
-        // we could have used 'Tag', but then the relationship would only be 1-way
-        ref: "Tag.posts",
-
-        // a Post can have many Tags, not just one
-        many: true,
-
-        // this is some customisations for changing how this will look in the AdminUI
-        ui: {
-          displayMode: "cards",
-          cardFields: ["name"],
-          inlineEdit: { fields: ["name"] },
-          linkToItem: true,
-          inlineConnect: true,
-          inlineCreate: { fields: ["name"] },
-        },
-      }),
       status: select({
         options: ["DRAFT", "PUBLISHED"],
         defaultValue: "DRAFT",
@@ -196,6 +179,20 @@ export const lists: Lists = {
           },
         },
       }),
+      uniqueVisitors: integer({
+        validation: { isRequired: true, min: 0 },
+        defaultValue: 0,
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          // update to only display if not null
+          itemView: {
+            fieldPosition: "sidebar",
+            fieldMode: "read",
+          },
+        },
+      }),
       avgTimeOnPage: integer({
         validation: { isRequired: true, min: 0 },
         defaultValue: 0,
@@ -225,7 +222,25 @@ export const lists: Lists = {
           },
         },
       }),
+      // with this field, you can add some Tags to Posts
+      tags: relationship({
+        // we could have used 'Tag', but then the relationship would only be 1-way
+        ref: "Tag.posts",
 
+        // a Post can have many Tags, not just one
+        many: true,
+
+        // this is some customisations for changing how this will look in the AdminUI
+        ui: {
+          displayMode: "cards",
+          cardFields: ["name"],
+          inlineEdit: { fields: ["name"] },
+          linkToItem: true,
+          inlineConnect: true,
+          inlineCreate: { fields: ["name"] },
+        },
+      }),
+      keywords: text(),
       featured: checkbox(),
       weight: float({
         validation: { isRequired: true, min: 0, max: 2 },
@@ -285,6 +300,92 @@ export const lists: Lists = {
         },
         componentBlocks,
       }),
+      popularScore: virtual({
+        field: graphql.field({
+          type: graphql.Float,
+          resolve(item, args, context) {
+            const { views, uniqueVisitors, publishedAt } = item;
+            const janOneTwentyFive = 1735711200;
+            const publishSeconds = Math.floor(
+              new Date(publishedAt || Date.now()).getTime() / 1000
+            );
+            const freshness =
+              (publishSeconds - janOneTwentyFive) / (60 * 60 * 24 * 14); // seconds in 14 days
+
+            const score = Math.log10(views + uniqueVisitors) + freshness;
+
+            return score;
+          },
+        }),
+        // ui: {
+        //   createView: {
+        //     fieldMode: "hidden",
+        //   },
+        //   itemView: {
+        //     fieldMode: "hidden",
+        //   },
+        // },
+      }),
+      relatedScore: virtual({
+        field: graphql.field({
+          type: graphql.Float,
+          args: {
+            keywords: graphql.arg({
+              type: graphql.nonNull(graphql.String),
+              defaultValue: "Video Games",
+            }),
+          },
+          resolve(item, args, context) {
+            const compKeywords = args.keywords
+              .split(",")
+              .map((kw) => kw.trim().toLowerCase());
+            const title = (item.title ?? "").toLowerCase();
+            const blurb = (item.blurb ?? "").toLowerCase();
+            const keywords = item.keywords
+              ? item.keywords.split(",").map((kw) => kw.trim().toLowerCase())
+              : [];
+            let score = 0;
+            compKeywords.forEach((kw) => {
+              if (title.includes(kw)) score += 5;
+              if (blurb.includes(kw)) score += 3;
+              if (keywords.includes(kw)) score += 1;
+            });
+            return score;
+          },
+        }),
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          itemView: {
+            fieldMode: "hidden",
+          },
+        },
+      }),
+      relatedPosts: virtual({
+        field: (lists) =>
+          graphql.field({
+            type: graphql.list(lists.Post.types.output),
+            async resolve(item, args, context) {
+              const posts = await context.query.Post.findMany({
+                where: {
+                  id: { not: { equals: item.id } },
+                  status: { equals: "PUBLISHED" },
+                },
+                query: `id title relatedScore(keywords: "${item.keywords}")`,
+              });
+
+              const topPosts = posts.sort(
+                (a, b) => a.relatedScore > b.relatedScore
+              );
+
+              return topPosts;
+            },
+          }),
+        ui: {
+          query: `{title}`,
+        },
+      }),
     },
     ui: {
       listView: {
@@ -300,13 +401,20 @@ export const lists: Lists = {
     },
 
     hooks: {
-      resolveInput: ({ operation, inputData, resolvedData }) => {
+      resolveInput: ({ operation, item, inputData, resolvedData }) => {
         let returnData = { ...resolvedData };
 
         // update updatedAt field for every update
-        returnData.updatedAt = new Date(Date.now());
+        if (
+          !inputData.views &&
+          !inputData.avgTimeOnPage &&
+          !inputData.uniqueVisitors
+        ) {
+          returnData.updatedAt = new Date(Date.now());
+        }
 
-        if (inputData.status === "PUBLISHED" && !inputData.publishedAt) {
+        // set publishedAt when status is changed to PUBLISHED and publishedAt is null
+        if (inputData.status === "PUBLISHED" && !item?.publishedAt) {
           returnData.publishedAt = new Date(Date.now());
         }
 

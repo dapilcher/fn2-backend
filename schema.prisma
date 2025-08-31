@@ -24,15 +24,17 @@ model Post {
   id                        String    @id @default(cuid())
   author                    User?     @relation("Post_author", fields: [authorId], references: [id])
   authorId                  String?   @map("author")
-  tags                      Tag[]     @relation("Post_tags")
   status                    String?   @default("DRAFT")
   createdAt                 DateTime? @default(now())
   publishedAt               DateTime?
   updatedAt                 DateTime?
   views                     Int       @default(0)
+  uniqueVisitors            Int       @default(0)
   avgTimeOnPage             Int       @default(0)
   title                     String    @default("")
   slug                      String    @unique @default("")
+  tags                      Tag[]     @relation("Post_tags")
+  keywords                  String    @default("")
   featured                  Boolean   @default(false)
   weight                    Float     @default(1)
   headerImage               Json?

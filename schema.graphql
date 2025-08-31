@@ -141,16 +141,18 @@ input PostRelateToManyForCreateInput {
 type Post {
   id: ID!
   author: User
-  tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
-  tagsCount(where: TagWhereInput! = {}): Int
   status: String
   createdAt: DateTime
   publishedAt: DateTime
   updatedAt: DateTime
   views: Int
+  uniqueVisitors: Int
   avgTimeOnPage: Int
   title: String
   slug: String
+  tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
+  tagsCount(where: TagWhereInput! = {}): Int
+  keywords: String
   featured: Boolean
   weight: Float
   headerImage: CloudinaryImage_File
@@ -159,6 +161,9 @@ type Post {
   headerAltText: String
   blurb: String
   content: Post_content_Document
+  popularScore: Float
+  relatedScore(keywords: String! = "Video Games"): Float
+  relatedPosts: [Post]
 }
 
 type CloudinaryImage_File {
@@ -224,27 +229,23 @@ input PostWhereInput {
   NOT: [PostWhereInput!]
   id: IDFilter
   author: UserWhereInput
-  tags: TagManyRelationFilter
   status: StringNullableFilter
   createdAt: DateTimeNullableFilter
   publishedAt: DateTimeNullableFilter
   updatedAt: DateTimeNullableFilter
   views: IntFilter
+  uniqueVisitors: IntFilter
   avgTimeOnPage: IntFilter
   title: StringFilter
   slug: StringFilter
+  tags: TagManyRelationFilter
+  keywords: StringFilter
   featured: BooleanFilter
   weight: FloatFilter
   headerImageAttribution: StringFilter
   headerImageAttributionUrl: StringFilter
   headerAltText: StringFilter
   blurb: StringFilter
-}
-
-input TagManyRelationFilter {
-  every: TagWhereInput
-  some: TagWhereInput
-  none: TagWhereInput
 }
 
 input StringNullableFilter {
@@ -273,6 +274,12 @@ input IntFilter {
   not: IntFilter
 }
 
+input TagManyRelationFilter {
+  every: TagWhereInput
+  some: TagWhereInput
+  none: TagWhereInput
+}
+
 input BooleanFilter {
   equals: Boolean
   not: BooleanFilter
@@ -296,9 +303,11 @@ input PostOrderByInput {
   publishedAt: OrderDirection
   updatedAt: OrderDirection
   views: OrderDirection
+  uniqueVisitors: OrderDirection
   avgTimeOnPage: OrderDirection
   title: OrderDirection
   slug: OrderDirection
+  keywords: OrderDirection
   featured: OrderDirection
   weight: OrderDirection
   headerImageAttribution: OrderDirection
@@ -309,14 +318,16 @@ input PostOrderByInput {
 
 input PostUpdateInput {
   author: UserRelateToOneForUpdateInput
-  tags: TagRelateToManyForUpdateInput
   status: String
   publishedAt: DateTime
   updatedAt: DateTime
   views: Int
+  uniqueVisitors: Int
   avgTimeOnPage: Int
   title: String
   slug: String
+  tags: TagRelateToManyForUpdateInput
+  keywords: String
   featured: Boolean
   weight: Float
   headerImage: Upload
@@ -350,14 +361,16 @@ input PostUpdateArgs {
 
 input PostCreateInput {
   author: UserRelateToOneForCreateInput
-  tags: TagRelateToManyForCreateInput
   status: String
   publishedAt: DateTime
   updatedAt: DateTime
   views: Int
+  uniqueVisitors: Int
   avgTimeOnPage: Int
   title: String
   slug: String
+  tags: TagRelateToManyForCreateInput
+  keywords: String
   featured: Boolean
   weight: Float
   headerImage: Upload
@@ -560,6 +573,7 @@ type Query {
   tagsCount(where: TagWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
+  getPopularPosts(take: Int = 8): [Post!]
 }
 
 union AuthenticatedItem = User
