@@ -366,18 +366,24 @@ export const lists: Lists = {
         field: (lists) =>
           graphql.field({
             type: graphql.list(lists.Post.types.output),
-            async resolve(item, args, context) {
+            args: {
+              take: graphql.arg({
+                type: graphql.Int,
+                defaultValue: 10,
+              }),
+            },
+            async resolve(item, { take }, context) {
               const posts = await context.query.Post.findMany({
                 where: {
                   id: { not: { equals: item.id } },
                   status: { equals: "PUBLISHED" },
                 },
-                query: `id title relatedScore(keywords: "${item.keywords}")`,
+                query: `title id slug headerImage { id } headerAltText relatedScore(keywords: "${item.keywords}")`,
               });
 
-              const topPosts = posts.sort(
-                (a, b) => a.relatedScore > b.relatedScore
-              );
+              const topPosts = posts
+                .sort((a, b) => a.relatedScore > b.relatedScore)
+                .slice(0, take);
 
               return topPosts;
             },

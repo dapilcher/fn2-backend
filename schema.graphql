@@ -163,7 +163,7 @@ type Post {
   content: Post_content_Document
   popularScore: Float
   relatedScore(keywords: String! = "Video Games"): Float
-  relatedPosts: [Post]
+  relatedPosts(take: Int = 10): [Post]
 }
 
 type CloudinaryImage_File {
