@@ -155,7 +155,7 @@ type Post {
   keywords: String
   featured: Boolean
   weight: Float
-  headerImage: CloudinaryImage_File
+  headerImage: Image
   headerImageAttribution: String
   headerImageAttributionUrl: String
   headerAltText: String
@@ -163,55 +163,7 @@ type Post {
   content: Post_content_Document
   popularScore: Float
   relatedScore(keywords: String! = "Video Games"): Float
-  relatedPosts: [Post]
-}
-
-type CloudinaryImage_File {
-  id: ID
-  filename: String
-  originalFilename: String
-  mimetype: String
-  encoding: String
-  publicUrl: String
-  publicUrlTransformed(transformation: CloudinaryImageFormat): String
-}
-
-"""
-Mirrors the formatting options [Cloudinary provides](https://cloudinary.com/documentation/image_transformation_reference).
-All options are strings as they ultimately end up in a URL.
-"""
-input CloudinaryImageFormat {
-  """ Rewrites the filename to be this pretty string. Do not include `/` or `.`
-  """
-  prettyName: String
-  width: String
-  height: String
-  crop: String
-  aspect_ratio: String
-  gravity: String
-  zoom: String
-  x: String
-  y: String
-  format: String
-  fetch_format: String
-  quality: String
-  radius: String
-  angle: String
-  effect: String
-  opacity: String
-  border: String
-  background: String
-  overlay: String
-  underlay: String
-  default_image: String
-  delay: String
-  color: String
-  color_space: String
-  dpr: String
-  page: String
-  density: String
-  flags: String
-  transformation: String
+  relatedPosts(take: Int = 10): [Post]
 }
 
 type Post_content_Document {
@@ -242,6 +194,7 @@ input PostWhereInput {
   keywords: StringFilter
   featured: BooleanFilter
   weight: FloatFilter
+  headerImage: ImageWhereInput
   headerImageAttribution: StringFilter
   headerImageAttributionUrl: StringFilter
   headerAltText: StringFilter
@@ -330,7 +283,7 @@ input PostUpdateInput {
   keywords: String
   featured: Boolean
   weight: Float
-  headerImage: Upload
+  headerImage: ImageRelateToOneForUpdateInput
   headerImageAttribution: String
   headerImageAttributionUrl: String
   headerAltText: String
@@ -351,8 +304,11 @@ input TagRelateToManyForUpdateInput {
   connect: [TagWhereUniqueInput!]
 }
 
-"""The `Upload` scalar type represents a file upload."""
-scalar Upload
+input ImageRelateToOneForUpdateInput {
+  create: ImageCreateInput
+  connect: ImageWhereUniqueInput
+  disconnect: Boolean
+}
 
 input PostUpdateArgs {
   where: PostWhereUniqueInput!
@@ -373,7 +329,7 @@ input PostCreateInput {
   keywords: String
   featured: Boolean
   weight: Float
-  headerImage: Upload
+  headerImage: ImageRelateToOneForCreateInput
   headerImageAttribution: String
   headerImageAttributionUrl: String
   headerAltText: String
@@ -391,6 +347,11 @@ input TagRelateToManyForCreateInput {
   connect: [TagWhereUniqueInput!]
 }
 
+input ImageRelateToOneForCreateInput {
+  create: ImageCreateInput
+  connect: ImageWhereUniqueInput
+}
+
 type Page {
   id: ID!
   createdAt: DateTime
@@ -405,6 +366,54 @@ type Page {
 
 type Page_content_Document {
   document(hydrateRelationships: Boolean! = false): JSON!
+}
+
+type CloudinaryImage_File {
+  id: ID
+  filename: String
+  originalFilename: String
+  mimetype: String
+  encoding: String
+  publicUrl: String
+  publicUrlTransformed(transformation: CloudinaryImageFormat): String
+}
+
+"""
+Mirrors the formatting options [Cloudinary provides](https://cloudinary.com/documentation/image_transformation_reference).
+All options are strings as they ultimately end up in a URL.
+"""
+input CloudinaryImageFormat {
+  """ Rewrites the filename to be this pretty string. Do not include `/` or `.`
+  """
+  prettyName: String
+  width: String
+  height: String
+  crop: String
+  aspect_ratio: String
+  gravity: String
+  zoom: String
+  x: String
+  y: String
+  format: String
+  fetch_format: String
+  quality: String
+  radius: String
+  angle: String
+  effect: String
+  opacity: String
+  border: String
+  background: String
+  overlay: String
+  underlay: String
+  default_image: String
+  delay: String
+  color: String
+  color_space: String
+  dpr: String
+  page: String
+  density: String
+  flags: String
+  transformation: String
 }
 
 input PageWhereUniqueInput {
@@ -444,6 +453,9 @@ input PageUpdateInput {
   headerImageAttribution: String
   headerImageAttributionUrl: String
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 input PageUpdateArgs {
   where: PageWhereUniqueInput!
@@ -506,6 +518,69 @@ input TagCreateInput {
   slug: String
 }
 
+type Image {
+  id: ID!
+  name: String
+  altText: String
+  image: ImageFieldOutput
+}
+
+type ImageFieldOutput {
+  id: ID!
+  filesize: Int!
+  width: Int!
+  height: Int!
+  extension: ImageExtension!
+  url: String!
+}
+
+enum ImageExtension {
+  jpg
+  png
+  webp
+  gif
+}
+
+input ImageWhereUniqueInput {
+  id: ID
+}
+
+input ImageWhereInput {
+  AND: [ImageWhereInput!]
+  OR: [ImageWhereInput!]
+  NOT: [ImageWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  altText: StringFilter
+}
+
+input ImageOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  altText: OrderDirection
+}
+
+input ImageUpdateInput {
+  name: String
+  altText: String
+  image: ImageFieldInput
+}
+
+input ImageFieldInput {
+  upload: Upload!
+}
+
+input ImageUpdateArgs {
+  where: ImageWhereUniqueInput!
+  data: ImageUpdateInput!
+}
+
+input ImageCreateInput {
+  name: String
+  altText: String
+  image: ImageFieldInput
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -536,6 +611,12 @@ type Mutation {
   updateTags(data: [TagUpdateArgs!]!): [Tag]
   deleteTag(where: TagWhereUniqueInput!): Tag
   deleteTags(where: [TagWhereUniqueInput!]!): [Tag]
+  createImage(data: ImageCreateInput!): Image
+  createImages(data: [ImageCreateInput!]!): [Image]
+  updateImage(where: ImageWhereUniqueInput!, data: ImageUpdateInput!): Image
+  updateImages(data: [ImageUpdateArgs!]!): [Image]
+  deleteImage(where: ImageWhereUniqueInput!): Image
+  deleteImages(where: [ImageWhereUniqueInput!]!): [Image]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -571,6 +652,9 @@ type Query {
   tag(where: TagWhereUniqueInput!): Tag
   tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
   tagsCount(where: TagWhereInput! = {}): Int
+  image(where: ImageWhereUniqueInput!): Image
+  images(where: ImageWhereInput! = {}, orderBy: [ImageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ImageWhereUniqueInput): [Image!]
+  imagesCount(where: ImageWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
   getPopularPosts(take: Int = 8): [Post!]
