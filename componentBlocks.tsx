@@ -97,43 +97,50 @@ export const componentBlocks = {
   documentImage: component({
     preview: (props) => {
       return (
-        <div
-          style={{
-            backgroundColor: "white",
-            backgroundImage: `url(${props.fields.imageSrc.value})`,
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-            display: "flex",
-            flexDirection: "column",
-            fontSize: 28,
-            justifyContent: "space-between",
-            minHeight: 200,
-            padding: 16,
-            width: "100%",
-          }}
-        >
-          <div
-            style={{
-              color: "white",
-              fontWeight: "bold",
-              fontSize: 48,
-              textAlign: "center",
-              margin: 16,
-              textShadow: "0px 1px 3px black",
-            }}
-          >
-            {props.fields.caption.element}
-          </div>
-        </div>
+        <>
+          <img
+            src={props.fields.image.value?.data.image.url}
+            style={{ width: "100%" }}
+          />
+          <p>{props.fields.caption.element}</p>
+        </>
+        // <div
+        //   style={{
+        //     backgroundColor: "white",
+        //     backgroundImage: `url(${props.fields.image.value?.data.image.url})`,
+        //     backgroundPosition: "center",
+        //     backgroundSize: "cover",
+        //     display: "flex",
+        //     flexDirection: "column",
+        //     fontSize: 28,
+        //     justifyContent: "space-between",
+        //     minHeight: 200,
+        //     padding: 16,
+        //     width: "100%",
+        //   }}
+        // >
+        //   <div
+        //     style={{
+        //       color: "white",
+        //       fontWeight: "bold",
+        //       fontSize: 48,
+        //       textAlign: "center",
+        //       margin: 16,
+        //       textShadow: "0px 1px 3px black",
+        //     }}
+        //   >
+        //     {props.fields.caption.element}
+        //   </div>
+        // </div>
       );
     },
     label: "Document Image",
     schema: {
       caption: fields.child({ kind: "inline", placeholder: "Caption..." }),
-      imageSrc: fields.text({
-        label: "Image URL",
-        defaultValue:
-          "https://images.unsplash.com/photo-1579546929518-9e396f3cc809",
+      image: fields.relationship({
+        label: "Image",
+        listKey: "Image",
+        selection: "image {url height width} altText",
       }),
       altText: fields.text({ label: "Alt text", defaultValue: "" }),
     },

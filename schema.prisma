@@ -37,7 +37,8 @@ model Post {
   keywords                  String    @default("")
   featured                  Boolean   @default(false)
   weight                    Float     @default(1)
-  headerImage               Json?
+  headerImage               Image?    @relation("Post_headerImage", fields: [headerImageId], references: [id])
+  headerImageId             String?   @map("headerImage")
   headerImageAttribution    String    @default("")
   headerImageAttributionUrl String    @default("")
   headerAltText             String    @default("Header image")
@@ -45,6 +46,7 @@ model Post {
   content                   Json      @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
 
   @@index([authorId])
+  @@index([headerImageId])
 }
 
 model Page {
@@ -64,4 +66,16 @@ model Tag {
   name  String @default("")
   posts Post[] @relation("Post_tags")
   slug  String @unique @default("")
+}
+
+model Image {
+  id                    String  @id @default(cuid())
+  name                  String  @default("")
+  altText               String  @default("")
+  image_id              String?
+  image_filesize        Int?
+  image_width           Int?
+  image_height          Int?
+  image_extension       String?
+  from_Post_headerImage Post[]  @relation("Post_headerImage")
 }
