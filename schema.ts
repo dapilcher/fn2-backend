@@ -21,6 +21,7 @@ import {
   integer,
   float,
   virtual,
+  image,
 } from "@keystone-6/core/fields";
 import { cloudinaryImage } from "@keystone-6/cloudinary";
 
@@ -247,12 +248,26 @@ export const lists: Lists = {
         defaultValue: 1,
       }),
 
-      headerImage: cloudinaryImage({
-        cloudinary: {
-          cloudName: getEnvVar("CLOUDINARY_CLOUD_NAME"),
-          apiKey: getEnvVar("CLOUDINARY_API_KEY"),
-          apiSecret: getEnvVar("CLOUDINARY_API_SECRET"),
-          folder: "flightlessnerd-dev",
+      // headerImage: cloudinaryImage({
+      //   cloudinary: {
+      //     cloudName: getEnvVar("CLOUDINARY_CLOUD_NAME"),
+      //     apiKey: getEnvVar("CLOUDINARY_API_KEY"),
+      //     apiSecret: getEnvVar("CLOUDINARY_API_SECRET"),
+      //     folder: "flightlessnerd-dev",
+      //   },
+      // }),
+
+      headerImage: relationship({
+        ref: "Image",
+        many: false,
+        ui: {
+          displayMode: "cards",
+          cardFields: ["image"],
+          linkToItem: true,
+          inlineCreate: {
+            fields: ["name", "altText", "image"],
+          },
+          inlineConnect: true,
         },
       }),
 
@@ -312,19 +327,23 @@ export const lists: Lists = {
             const freshness =
               (publishSeconds - janOneTwentyFive) / (60 * 60 * 24 * 14); // seconds in 14 days
 
-            const score = Math.log10(views + uniqueVisitors) + freshness;
+            let sumViews = views + uniqueVisitors;
 
-            return score;
+            if (sumViews === 0) sumViews = 1;
+
+            const score = Math.log10(sumViews) + freshness;
+
+            return score || 0;
           },
         }),
-        // ui: {
-        //   createView: {
-        //     fieldMode: "hidden",
-        //   },
-        //   itemView: {
-        //     fieldMode: "hidden",
-        //   },
-        // },
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          itemView: {
+            fieldMode: "hidden",
+          },
+        },
       }),
       relatedScore: virtual({
         field: graphql.field({
@@ -350,7 +369,7 @@ export const lists: Lists = {
               if (blurb.includes(kw)) score += 3;
               if (keywords.includes(kw)) score += 1;
             });
-            return score;
+            return score || 0;
           },
         }),
         ui: {
@@ -378,7 +397,7 @@ export const lists: Lists = {
                   id: { not: { equals: item.id } },
                   status: { equals: "PUBLISHED" },
                 },
-                query: `title id slug headerImage { id } headerAltText relatedScore(keywords: "${item.keywords}")`,
+                query: `title id slug headerImage { image { url height width } } headerAltText relatedScore(keywords: "${item.keywords}")`,
               });
 
               const topPosts = posts
@@ -389,7 +408,15 @@ export const lists: Lists = {
             },
           }),
         ui: {
-          query: `{title}`,
+          createView: {
+            fieldMode: "hidden",
+          },
+          listView: {
+            fieldMode: "hidden",
+          },
+          itemView: {
+            fieldMode: "hidden",
+          },
         },
       }),
     },
@@ -594,6 +621,18 @@ export const lists: Lists = {
 
         return returnData;
       },
+    },
+  }),
+  Image: list({
+    access: allowAll,
+    fields: {
+      name: text({
+        validation: {
+          isRequired: true,
+        },
+      }),
+      altText: text(),
+      image: image({ storage: "localImages" }),
     },
   }),
 };

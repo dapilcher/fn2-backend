@@ -19,6 +19,8 @@ import { withAuth, session } from "./auth";
 
 import getEnvVar from "./utils/getEnvVar";
 
+const baseUrl = "http://localhost:3000";
+
 export default withAuth(
   config({
     server: {
@@ -36,6 +38,22 @@ export default withAuth(
     },
     lists,
     session,
+    storage: {
+      // The key here will be what is referenced in the image field
+      localImages: {
+        // Images that use this store will be stored on the local machine
+        kind: "local",
+        // This store is used for the image field type
+        type: "image",
+        // The URL that is returned in the Keystone GraphQL API
+        generateUrl: (path) => `${baseUrl}/images${path}`,
+        // The route that will be created in Keystone's backend to serve the images
+        serverRoute: {
+          path: "/images",
+        },
+        storagePath: "public/keystone-images",
+      },
+    },
     graphql: {
       extendGraphqlSchema: graphql.extend((base) => {
         return {
@@ -62,7 +80,7 @@ export default withAuth(
                     id: { in: sortedPosts.map((post) => post.id) || [] },
                   },
                   query:
-                    "title author { id name } slug id headerImage { id } headerAltText blurb tags { name slug id }",
+                    "title author { id name } slug id headerImage { image { url height width } } headerAltText blurb tags { name slug id }",
                 });
                 console.log({ final });
                 return final;
