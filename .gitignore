@@ -5,4 +5,4 @@ keystone.db
 .vercel
 .env*
 ecosystem.config.js
-public/keystone-images
+public/keystone-images/*
