@@ -69,13 +69,23 @@ model Tag {
 }
 
 model Image {
-  id                    String  @id @default(cuid())
-  name                  String  @default("")
-  altText               String  @default("")
+  id                    String       @id @default(cuid())
+  name                  String       @default("")
+  altText               String       @default("")
   image_id              String?
   image_filesize        Int?
   image_width           Int?
   image_height          Int?
   image_extension       String?
-  from_Post_headerImage Post[]  @relation("Post_headerImage")
+  folder                ImageFolder? @relation("Image_folder", fields: [folderId], references: [id])
+  folderId              String?      @map("folder")
+  from_Post_headerImage Post[]       @relation("Post_headerImage")
+
+  @@index([folderId])
+}
+
+model ImageFolder {
+  id     String  @id @default(cuid())
+  name   String  @default("")
+  images Image[] @relation("Image_folder")
 }

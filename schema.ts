@@ -625,6 +625,7 @@ export const lists: Lists = {
   }),
   Image: list({
     access: allowAll,
+    description: "Images to use as post headers or within the post content",
     fields: {
       name: text({
         validation: {
@@ -633,6 +634,31 @@ export const lists: Lists = {
       }),
       altText: text(),
       image: image({ storage: "localImages" }),
+      folder: relationship({
+        ref: "ImageFolder.images",
+        many: false,
+        ui: {
+          displayMode: "cards",
+          cardFields: ["name"],
+          inlineEdit: { fields: ["name"] },
+          linkToItem: true,
+          inlineConnect: true,
+          inlineCreate: { fields: ["name"] },
+        },
+      }),
+    },
+    ui: {
+      listView: {
+        initialColumns: ["image", "name", "folder"],
+      },
+    },
+  }),
+  ImageFolder: list({
+    access: allowAll,
+    description: "Categorical folders to organiza images",
+    fields: {
+      name: text({ validation: { isRequired: true } }),
+      images: relationship({ ref: "Image.folder", many: true }),
     },
   }),
 };
