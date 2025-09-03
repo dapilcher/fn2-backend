@@ -52,6 +52,7 @@ jobs:
             CLOUDINARY_API_KEY="${{ secrets.CLOUDINARY_API_KEY }}"
             CLOUDINARY_API_SECRET="${{ secrets.CLOUDINARY_API_SECRET }}"
             CLOUDINARY_FOLDER="${{ secrets.CLOUDINARY_FOLDER }}"
+            BACKEND_URL="${{ secrets.BACKEND_URL }}"
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@6.0.0
         with:
