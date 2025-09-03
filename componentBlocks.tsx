@@ -98,11 +98,33 @@ export const componentBlocks = {
     preview: (props) => {
       return (
         <>
-          <img
-            src={props.fields.image.value?.data.image.url}
-            style={{ width: "100%" }}
-          />
-          <p>{props.fields.caption.element}</p>
+          <NotEditable>
+            {props.fields.image?.value?.data ? (
+              <img
+                src={props.fields.image?.value?.data.image.url}
+                style={{ width: "100%" }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: "100%",
+                  height: "5rem",
+                  border: "1px solid lightgray",
+                  color: "lightgray",
+                  fontStyle: "italic",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                Could not find image...
+              </div>
+            )}
+          </NotEditable>
+          <p style={{ color: "gray", fontStyle: "italic" }}>
+            {props.fields.caption?.element}
+          </p>
         </>
         // <div
         //   style={{

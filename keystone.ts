@@ -46,12 +46,12 @@ export default withAuth(
         // This store is used for the image field type
         type: "image",
         // The URL that is returned in the Keystone GraphQL API
-        generateUrl: (path) => `${baseUrl}/images${path}`,
+        generateUrl: (path) => `${baseUrl}/image${path}`,
         // The route that will be created in Keystone's backend to serve the images
         serverRoute: {
-          path: "/images",
+          path: "/image",
         },
-        storagePath: "public/keystone-images",
+        storagePath: "../keystone-images",
       },
     },
     graphql: {
