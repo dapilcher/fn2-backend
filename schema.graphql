@@ -523,6 +523,7 @@ type Image {
   name: String
   altText: String
   image: ImageFieldOutput
+  folder: ImageFolder
 }
 
 type ImageFieldOutput {
@@ -552,6 +553,7 @@ input ImageWhereInput {
   id: IDFilter
   name: StringFilter
   altText: StringFilter
+  folder: ImageFolderWhereInput
 }
 
 input ImageOrderByInput {
@@ -564,10 +566,17 @@ input ImageUpdateInput {
   name: String
   altText: String
   image: ImageFieldInput
+  folder: ImageFolderRelateToOneForUpdateInput
 }
 
 input ImageFieldInput {
   upload: Upload!
+}
+
+input ImageFolderRelateToOneForUpdateInput {
+  create: ImageFolderCreateInput
+  connect: ImageFolderWhereUniqueInput
+  disconnect: Boolean
 }
 
 input ImageUpdateArgs {
@@ -579,6 +588,70 @@ input ImageCreateInput {
   name: String
   altText: String
   image: ImageFieldInput
+  folder: ImageFolderRelateToOneForCreateInput
+}
+
+input ImageFolderRelateToOneForCreateInput {
+  create: ImageFolderCreateInput
+  connect: ImageFolderWhereUniqueInput
+}
+
+type ImageFolder {
+  id: ID!
+  name: String
+  images(where: ImageWhereInput! = {}, orderBy: [ImageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ImageWhereUniqueInput): [Image!]
+  imagesCount(where: ImageWhereInput! = {}): Int
+}
+
+input ImageFolderWhereUniqueInput {
+  id: ID
+}
+
+input ImageFolderWhereInput {
+  AND: [ImageFolderWhereInput!]
+  OR: [ImageFolderWhereInput!]
+  NOT: [ImageFolderWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  images: ImageManyRelationFilter
+}
+
+input ImageManyRelationFilter {
+  every: ImageWhereInput
+  some: ImageWhereInput
+  none: ImageWhereInput
+}
+
+input ImageFolderOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+}
+
+input ImageFolderUpdateInput {
+  name: String
+  images: ImageRelateToManyForUpdateInput
+}
+
+input ImageRelateToManyForUpdateInput {
+  disconnect: [ImageWhereUniqueInput!]
+  set: [ImageWhereUniqueInput!]
+  create: [ImageCreateInput!]
+  connect: [ImageWhereUniqueInput!]
+}
+
+input ImageFolderUpdateArgs {
+  where: ImageFolderWhereUniqueInput!
+  data: ImageFolderUpdateInput!
+}
+
+input ImageFolderCreateInput {
+  name: String
+  images: ImageRelateToManyForCreateInput
+}
+
+input ImageRelateToManyForCreateInput {
+  create: [ImageCreateInput!]
+  connect: [ImageWhereUniqueInput!]
 }
 
 """
@@ -617,6 +690,12 @@ type Mutation {
   updateImages(data: [ImageUpdateArgs!]!): [Image]
   deleteImage(where: ImageWhereUniqueInput!): Image
   deleteImages(where: [ImageWhereUniqueInput!]!): [Image]
+  createImageFolder(data: ImageFolderCreateInput!): ImageFolder
+  createImageFolders(data: [ImageFolderCreateInput!]!): [ImageFolder]
+  updateImageFolder(where: ImageFolderWhereUniqueInput!, data: ImageFolderUpdateInput!): ImageFolder
+  updateImageFolders(data: [ImageFolderUpdateArgs!]!): [ImageFolder]
+  deleteImageFolder(where: ImageFolderWhereUniqueInput!): ImageFolder
+  deleteImageFolders(where: [ImageFolderWhereUniqueInput!]!): [ImageFolder]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -655,6 +734,9 @@ type Query {
   image(where: ImageWhereUniqueInput!): Image
   images(where: ImageWhereInput! = {}, orderBy: [ImageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ImageWhereUniqueInput): [Image!]
   imagesCount(where: ImageWhereInput! = {}): Int
+  imageFolder(where: ImageFolderWhereUniqueInput!): ImageFolder
+  imageFolders(where: ImageFolderWhereInput! = {}, orderBy: [ImageFolderOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ImageFolderWhereUniqueInput): [ImageFolder!]
+  imageFoldersCount(where: ImageFolderWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
   getPopularPosts(take: Int = 8): [Post!]
