@@ -167,4 +167,71 @@ export const componentBlocks = {
       altText: fields.text({ label: "Alt text", defaultValue: "" }),
     },
   }),
+  numberedHeading: component({
+    preview: (props) => {
+      // console.log({ props });
+      return (
+        <>
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <span
+              style={{
+                display: "block",
+                width: "100%",
+                height: "0.25rem",
+                backgroundColor: "red",
+              }}
+            />
+            <span
+              style={{
+                height: "1rem",
+                width: "1rem",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                border: "0.25rem solid red",
+                borderRadius: "50%",
+                padding: "1.5rem",
+                fontWeight: "bold",
+                fontSize: "24px",
+              }}
+            >
+              {props.fields.number?.element}
+            </span>
+            <span
+              style={{
+                display: "block",
+                width: "100%",
+                height: "0.25rem",
+                backgroundColor: "red",
+              }}
+            />
+          </div>
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <h2>{props.fields.text?.element}</h2>
+          </div>
+        </>
+      );
+    },
+    label: "Numbered Heading",
+    schema: {
+      text: fields.child({ kind: "inline", placeholder: "Title" }),
+      number: fields.child({ kind: "inline", placeholder: "1" }),
+    },
+  }),
 };
