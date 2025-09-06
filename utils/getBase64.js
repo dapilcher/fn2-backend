@@ -12,7 +12,6 @@ export default async function getBase64(imgSrc) {
       Buffer.from(await res.arrayBuffer())
     );
     const { base64 } = await getPlaiceholder(buffer);
-    console.log({ base64 });
     return base64;
   } catch (err) {
     console.error("Error fetching plaiceholder", err);
