@@ -37,6 +37,7 @@ import { componentBlocks } from "./componentBlocks";
 import { DateTime } from "@keystone-6/core/dist/declarations/src/types/schema/graphql-ts-schema";
 
 import getEnvVar from "./utils/getEnvVar";
+import getBase64 from "./utils/getBase64";
 
 export const lists: Lists = {
   User: list({
@@ -644,6 +645,38 @@ export const lists: Lists = {
           linkToItem: true,
           inlineConnect: true,
           inlineCreate: { fields: ["name"] },
+        },
+      }),
+      base64URL: virtual({
+        field: graphql.field({
+          type: graphql.nonNull(graphql.String),
+          // args: {
+          //   imgSrc: graphql.arg({
+          //     type: graphql.String,
+          //     defaultValue: "",
+          //   }),
+          // },
+          async resolve(item, args, context) {
+            const image = await context.query.Image.findOne({
+              where: {
+                id: item.id,
+              },
+              query: `image {url}`,
+            });
+            const base64 = await getBase64(image.image.url);
+            return base64;
+          },
+        }),
+        ui: {
+          createView: {
+            fieldMode: "hidden",
+          },
+          listView: {
+            fieldMode: "hidden",
+          },
+          itemView: {
+            fieldMode: "hidden",
+          },
         },
       }),
     },
