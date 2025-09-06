@@ -524,6 +524,7 @@ type Image {
   altText: String
   image: ImageFieldOutput
   folder: ImageFolder
+  base64URL: String!
 }
 
 type ImageFieldOutput {
