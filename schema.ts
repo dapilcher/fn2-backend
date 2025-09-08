@@ -307,7 +307,7 @@ export const lists: Lists = {
           },
           postMention: {
             listKey: "Post",
-            selection: "id title",
+            selection: "id slug title",
             label: "Post Mention",
           },
         },
