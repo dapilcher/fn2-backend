@@ -26,7 +26,7 @@ jobs:
                   name: "${{ secrets.PM2_APPNAME }}",
                   script: "npm",
                   args: "start",
-                  watch: false,
+                  watch: true,
                   autorestart: true,
                   restart_delay: 1000,
                   env: {
