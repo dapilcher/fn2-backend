@@ -230,7 +230,11 @@ export const componentBlocks = {
     },
     label: "Numbered Heading",
     schema: {
-      text: fields.child({ kind: "inline", placeholder: "Title" }),
+      text: fields.child({
+        kind: "inline",
+        formatting: "inherit",
+        placeholder: "Title",
+      }),
       number: fields.child({ kind: "inline", placeholder: "1" }),
     },
   }),
