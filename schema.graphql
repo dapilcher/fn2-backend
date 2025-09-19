@@ -740,7 +740,7 @@ type Query {
   imageFoldersCount(where: ImageFolderWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
-  getPopularPosts(take: Int = 8): [Post!]
+  getPopularPosts(skip: Int = 0, take: Int = 8): [Post!]
 }
 
 union AuthenticatedItem = User

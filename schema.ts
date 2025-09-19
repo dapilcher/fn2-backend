@@ -320,13 +320,17 @@ export const lists: Lists = {
         field: graphql.field({
           type: graphql.Float,
           resolve(item, args, context) {
-            const { views, uniqueVisitors, publishedAt } = item;
+            const { views, uniqueVisitors, publishedAt, updatedAt } = item;
             const janOneTwentyFive = 1735711200;
             const publishSeconds = Math.floor(
               new Date(publishedAt || Date.now()).getTime() / 1000
             );
+            const updatedSeconds = Math.floor(
+              new Date(updatedAt || Date.now()).getTime() / 1000
+            );
             const freshness =
-              (publishSeconds - janOneTwentyFive) / (60 * 60 * 24 * 14); // seconds in 14 days
+              ((publishSeconds + updatedSeconds) / 2 - janOneTwentyFive) /
+              (60 * 60 * 24 * 14); // seconds in 14 days
 
             let sumViews = views + uniqueVisitors;
 
@@ -368,7 +372,7 @@ export const lists: Lists = {
             compKeywords.forEach((kw) => {
               if (title.includes(kw)) score += 5;
               if (blurb.includes(kw)) score += 3;
-              if (keywords.includes(kw)) score += 1;
+              if (keywords.includes(kw)) score += 2;
             });
             return score || 0;
           },
@@ -398,14 +402,21 @@ export const lists: Lists = {
                   id: { not: { equals: item.id } },
                   status: { equals: "PUBLISHED" },
                 },
-                query: `title id slug headerImage { image { url height width } } headerAltText relatedScore(keywords: "${item.keywords}")`,
+                query: `id title relatedScore(keywords: "${item.keywords}")`,
               });
 
               const topPosts = posts
-                .sort((a, b) => a.relatedScore > b.relatedScore)
+                .sort((a, b) => b.relatedScore - a.relatedScore)
                 .slice(0, take);
 
-              return topPosts;
+              console.log({ topPosts });
+              const final = await context.db.Post.findMany({
+                where: {
+                  id: { in: topPosts.map((post) => post.id) || [] },
+                },
+              });
+              // console.log({ final });
+              return final;
             },
           }),
         ui: {

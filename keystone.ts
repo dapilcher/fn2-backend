@@ -61,9 +61,10 @@ export default withAuth(
             getPopularPosts: graphql.field({
               type: graphql.list(graphql.nonNull(base.object("Post"))),
               args: {
+                skip: graphql.arg({ type: graphql.Int, defaultValue: 0 }),
                 take: graphql.arg({ type: graphql.Int, defaultValue: 8 }),
               },
-              async resolve(source, { take }, context) {
+              async resolve(source, { skip = 0, take = 8 }, context) {
                 const allPosts = await context.query.Post.findMany({
                   where: { status: { equals: "PUBLISHED" } },
                   query: "id popularScore",
@@ -73,16 +74,14 @@ export default withAuth(
                   .sort((a, b) => {
                     return b.popularScore - a.popularScore;
                   })
-                  .slice(0, take);
+                  .slice(skip, skip + take);
 
-                const final = await context.query.Post.findMany({
+                const final = await context.db.Post.findMany({
                   where: {
                     id: { in: sortedPosts.map((post) => post.id) || [] },
                   },
-                  query:
-                    "title author { id name } slug id headerImage { image { url height width } } headerAltText blurb tags { name slug id }",
                 });
-                console.log({ final });
+                // console.log({ final });
                 return final;
               },
             }),
